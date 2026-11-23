@@ -1,0 +1,1643 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Switch Prep Planner</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="theme-color" content="#1d6b57">
+<meta name="apple-mobile-web-app-title" content="Switch Prep">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; }
+[hidden] { display: none !important; }
+img { max-width: 100%; }
+/* Layout: one narrow study column, sticky date bar on top, tab bar pinned to the bottom like a phone app. */
+:root {
+  --bg: #eef2ef; --surface: #fbfcfb; --surface-2: #e3e9e5; --ink: #16211d; --muted: #5a6a63; --line: #d2dbd6;
+  --accent: #1d6b57; --accent-ink: #ffffff; --accent-soft: #d5e8df;
+  --rev: #9a5800; --rev-soft: #f4e5cc;
+  --easy: #2b7a3e; --med: #9a5c00; --hard: #ad3027;
+  --good: #2b7a3e; --bad: #ad3027;
+  --f-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --r: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1513; --surface: #161e1b; --surface-2: #1f2a26; --ink: #e3ebe7; --muted: #93a59d; --line: #2b3833;
+    --accent: #5ec4a3; --accent-ink: #0b1512; --accent-soft: #1b3830;
+    --rev: #e8a74c; --rev-soft: #3a2c17;
+    --easy: #6fd089; --med: #e8a74c; --hard: #f07d73; --good: #6fd089; --bad: #f07d73;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1513; --surface: #161e1b; --surface-2: #1f2a26; --ink: #e3ebe7; --muted: #93a59d; --line: #2b3833;
+  --accent: #5ec4a3; --accent-ink: #0b1512; --accent-soft: #1b3830;
+  --rev: #e8a74c; --rev-soft: #3a2c17;
+  --easy: #6fd089; --med: #e8a74c; --hard: #f07d73; --good: #6fd089; --bad: #f07d73;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 calc(76px + env(safe-area-inset-bottom, 0px));
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.wrap { max-width: 760px; margin: 0 auto; }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.mono { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+
+/* Top bar */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); padding-block: 12px 10px; border-bottom: 1px solid var(--line); }
+.brand { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.brand b { font-family: var(--f-display); font-size: 15px; letter-spacing: 0.01em; }
+.sync { text-decoration: none; font-size: 12px; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; }
+.sync i { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); display: inline-block; }
+.sync[data-s="synced"] i, .sync[data-s="saved"] i { background: var(--good); }
+.sync[data-s="error"] i, .sync[data-s="slow"] i { background: var(--rev); }
+.datebar { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+.datebar h1 { flex: 1; min-width: 0; margin: 0; font-family: var(--f-display); font-weight: 700; font-size: clamp(22px, 5.5vw, 30px); line-height: 1.1; text-wrap: balance; }
+.datebar .sub { display: block; font-family: var(--f-body); font-weight: 500; font-size: 13px; color: var(--muted); margin-top: 4px; }
+.iconbtn { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; height: 36px; min-width: 36px; padding: 0 10px; cursor: pointer; font-weight: 600; }
+.iconbtn:hover { border-color: var(--accent); }
+.iconbtn[hidden] { display: none !important; }
+
+/* Bottom tabs */
+.tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 6; background: var(--surface); border-top: 1px solid var(--line);
+  padding: 6px max(8px, env(safe-area-inset-left, 0px)) calc(6px + env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-right, 0px)); }
+.tabs .in { max-width: 760px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+.tabs a { text-decoration: none; color: var(--muted); text-align: center; padding: 8px 4px; border-radius: 8px; font-size: 13px; font-weight: 600; }
+.tabs a[aria-current="page"] { color: var(--accent); background: var(--accent-soft); }
+
+/* Readiness strip */
+.ready { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 16px 0 4px; }
+.meter { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 10px 12px; min-width: 0; }
+.meter .lbl { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 600; }
+.meter .val { display: flex; align-items: baseline; gap: 8px; margin-top: 2px; }
+.meter .val b { font-family: var(--f-display); font-size: 24px; }
+.meter .val span { font-size: 12px; color: var(--muted); }
+.bar { height: 6px; background: var(--surface-2); border-radius: 3px; overflow: hidden; margin-top: 6px; }
+.bar > i { display: block; height: 100%; background: var(--accent); border-radius: 3px; }
+.pace { font-size: 12.5px; margin-top: 6px; font-weight: 500; }
+.pace.ok { color: var(--good); } .pace.late { color: var(--rev); }
+
+/* Sections */
+section.blk { margin-top: 22px; }
+.blk-h { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.blk-h h2 { margin: 0; font-family: var(--f-display); font-size: 18px; font-weight: 700; }
+.blk-h .meta { font-size: 12.5px; color: var(--muted); }
+.list { display: grid; gap: 10px; }
+.empty { padding: 14px; border: 1px dashed var(--line); border-radius: var(--r); color: var(--muted); font-size: 14px; }
+
+/* Cards */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 12px 14px; min-width: 0; }
+.card.is-done { background: transparent; }
+.card.is-done h3 a, .card.is-done h3 span { color: var(--muted); text-decoration: line-through; text-decoration-thickness: 1px; }
+.card.rev { border-left: 3px solid var(--rev); }
+.tags { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+.tag { padding: 1px 8px; border-radius: 99px; background: var(--surface-2); font-weight: 500; }
+.tag.d-E, .tag.d-T { color: var(--easy); } .tag.d-M { color: var(--med); } .tag.d-H { color: var(--hard); }
+.tag.revt { background: var(--rev-soft); color: var(--rev); font-weight: 600; }
+.tag.bonus { background: var(--accent-soft); color: var(--accent); }
+.card h3 { margin: 6px 0 8px; font-size: 16px; font-weight: 600; line-height: 1.35; overflow-wrap: anywhere; }
+.card h3 a { color: var(--ink); text-decoration: none; }
+.card h3 a:hover { text-decoration: underline; color: var(--accent); }
+.links { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13.5px; margin-bottom: 10px; }
+.links a { font-weight: 500; }
+.links .hint { color: var(--muted); }
+/* Learn page + DSA Visual switch (naye tab) */
+.links a.learn { font-weight: 700; color: var(--accent); }
+.brand .right { display: inline-flex; align-items: center; gap: 12px; }
+.brand .swap { font-size: 12px; font-weight: 600; text-decoration: none; border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; background: var(--surface); }
+.brand .swap:hover { border-color: var(--accent); }
+.rm .learn { text-decoration: none; font-size: 12px; margin-left: 4px; }
+.daylesson { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-top: 14px; padding: 10px 12px; border: 1px solid var(--accent); border-radius: var(--r); background: var(--accent-soft); }
+.daylesson a { font-weight: 700; text-decoration: none; }
+.daylesson span { font-size: 12.5px; color: var(--muted); }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--bg); }
+.seg button { border: 0; background: transparent; padding: 7px 12px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--muted); }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"][data-v="s"] { background: var(--rev-soft); color: var(--rev); }
+.seg button[aria-pressed="true"][data-v="d"] { background: var(--accent); color: var(--accent-ink); }
+.seg button[aria-pressed="true"][data-v="p"] { background: var(--surface-2); color: var(--ink); }
+.rate { display: flex; flex-wrap: wrap; gap: 6px; }
+.rate button { border: 1px solid var(--line); background: var(--bg); border-radius: 8px; padding: 6px 12px; cursor: pointer; font-weight: 600; font-size: 13px; }
+.rate button small { font-weight: 500; color: var(--muted); margin-left: 4px; }
+.rate button[data-r="hard"]:hover { border-color: var(--hard); color: var(--hard); }
+.rate button[data-r="ok"]:hover { border-color: var(--med); color: var(--med); }
+.rate button[data-r="easy"]:hover { border-color: var(--easy); color: var(--easy); }
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.txt { border: 0; background: none; color: var(--accent); cursor: pointer; padding: 4px 0; font-weight: 600; font-size: 13px; }
+details.qs, details.note { margin-top: 10px; }
+details summary { cursor: pointer; font-size: 13px; font-weight: 600; color: var(--muted); }
+details.qs ol { margin: 8px 0 0; padding-left: 20px; display: grid; gap: 4px; font-size: 14px; }
+details.note textarea { width: 100%; margin-top: 6px; min-height: 64px; resize: vertical; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--ink); padding: 8px 10px; font: inherit; font-size: 14px; }
+.savednote { margin: 0 0 10px; padding: 8px 10px; background: var(--surface-2); border-radius: 8px; font-size: 14px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.pull { margin-top: 10px; }
+.more { font-size: 13px; color: var(--muted); margin-top: 8px; }
+
+/* Day summary line */
+.daysum { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 14px; font-size: 13px; color: var(--muted); }
+.daysum b { color: var(--ink); }
+
+/* Week */
+.day { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 10px 12px; }
+.day.today { border-color: var(--accent); }
+.day-h { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.day-h button { border: 0; background: none; padding: 0; cursor: pointer; text-align: left; font-family: var(--f-display); font-weight: 700; font-size: 15px; }
+.day-h button:hover { color: var(--accent); }
+.day ul { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 4px; font-size: 14px; }
+.day li { display: flex; gap: 8px; align-items: baseline; min-width: 0; }
+.day li span.t { min-width: 0; overflow-wrap: anywhere; }
+.dot { width: 8px; height: 8px; border-radius: 50%; flex: none; border: 1.5px solid var(--muted); display: inline-block; transform: translateY(-1px); }
+.dot.s { border-color: var(--rev); background: var(--rev-soft); }
+.dot.d { border-color: var(--accent); background: var(--accent); }
+.kind { font-size: 11px; color: var(--muted); font-family: var(--f-mono); flex: none; }
+
+/* Roadmap */
+.tier { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; }
+.tier + .tier { margin-top: 12px; }
+.tier-h { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 12px; align-items: baseline; }
+.tier-h h2 { margin: 0; font-family: var(--f-display); font-size: 19px; }
+.tier p.blurb { margin: 4px 0 8px; color: var(--muted); font-size: 14px; }
+.lock { margin-top: 8px; font-size: 13px; padding: 8px 10px; border-radius: 8px; background: var(--surface-2); color: var(--muted); }
+.tier details { border-top: 1px solid var(--line); padding-top: 8px; margin-top: 10px; }
+.tier details summary { font-size: 14px; color: var(--ink); }
+.grp { margin-top: 10px; }
+.grp h4 { margin: 0 0 4px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.rm { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.rm li { display: grid; grid-template-columns: 12px 1fr auto; gap: 8px; align-items: baseline; font-size: 14px; padding: 3px 0; }
+.rm li a, .rm li .t { min-width: 0; overflow-wrap: anywhere; color: var(--ink); text-decoration: none; }
+.rm li a:hover { color: var(--accent); text-decoration: underline; }
+.rm .when { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.rm .start { border: 1px solid var(--line); background: var(--bg); border-radius: 6px; font-size: 12px; padding: 2px 8px; cursor: pointer; font-weight: 600; color: var(--accent); }
+
+/* Progress */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 12px; min-width: 0; }
+.stat b { display: block; font-family: var(--f-display); font-size: 26px; line-height: 1.1; }
+.stat span { font-size: 13px; color: var(--muted); }
+.topics { display: grid; gap: 8px; }
+.topic { display: grid; grid-template-columns: minmax(0, 11em) 1fr 3.5em; gap: 10px; align-items: center; font-size: 13.5px; }
+.topic .bar { margin: 0; }
+.topic .n { text-align: right; color: var(--muted); }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; font-size: 14px; }
+.panel p { margin: 0 0 8px; } .panel p:last-child { margin: 0; }
+.panel ol, .panel ul { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
+.btn { border: 1px solid var(--accent); background: var(--accent); color: var(--accent-ink); border-radius: 8px; padding: 8px 14px; font-weight: 600; cursor: pointer; font-size: 14px; }
+.btn.ghost { background: transparent; color: var(--accent); }
+.btn.warn { background: var(--bad); border-color: var(--bad); color: #fff; }
+.panel textarea { width: 100%; min-height: 90px; margin: 8px 0; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--ink); padding: 8px; font: 12px var(--f-mono); }
+.msg { font-size: 13px; color: var(--muted); }
+
+.ready.one { grid-template-columns: 1fr; }
+.setup .lead { font-size: 16px; margin: 18px 0 14px; max-width: 60ch; }
+.form { display: grid; gap: 10px; }
+.form label { display: block; font-weight: 600; font-size: 13.5px; margin-bottom: 4px; }
+.form .opt { font-weight: 500; color: var(--muted); margin-left: 4px; }
+.form input[type=text], .form input[type=date], .form select { width: 100%; min-width: 0; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--ink); padding: 9px 10px; font: inherit; font-size: 15px; }
+.form input:focus, .form select:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px var(--accent-soft); }
+.form .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.form .two > div { min-width: 0; }
+.form .msg { margin: 0; }
+.form label.check { display: flex; gap: 8px; align-items: center; font-size: 14.5px; margin: 4px 0 0; cursor: pointer; }
+.form label.check input { width: 18px; height: 18px; accent-color: var(--accent); }
+.est { background: var(--surface-2); border-radius: 8px; padding: 10px 12px; font-size: 14px; }
+.est:empty { display: none; }
+.est ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+.est p { margin: 0 0 6px; } .est p:last-child { margin: 8px 0 0; }
+.est-h { font-size: 12px !important; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 600; }
+.est .ok { color: var(--good); font-weight: 600; } .est .late, p.late { color: var(--rev); font-weight: 600; }
+.tabs[hidden] { display: none !important; }
+@media (max-width: 480px) {
+  .form .two { grid-template-columns: 1fr; }
+  .ready, .grid2 { grid-template-columns: 1fr; }
+  .topic { grid-template-columns: minmax(0, 8.5em) 1fr 3em; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .bar > i { transition: width .3s ease; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><b id="brandname">Switch Prep</b><span class="right"><a class="swap" href="learn.html" title="Saare lessons">📖 Lessons</a><a class="swap" href="../index.html#/home" target="_blank" rel="noopener" title="DSA Visual — alag module, alag progress (naye tab me)">DSA Visual ↗</a><a class="sync" id="sync" href="#progress" data-s="local"><i></i><span>Loading…</span></a></span></div>
+    <div class="datebar">
+      <button class="iconbtn" id="prev" type="button" aria-label="Previous">‹</button>
+      <h1 id="title">Today</h1>
+      <button class="iconbtn" id="gotoday" type="button">Today</button>
+      <button class="iconbtn" id="next" type="button" aria-label="Next">›</button>
+    </div>
+  </header>
+  <main id="main"><p class="empty">Loading your plan…</p></main>
+</div>
+<nav class="tabs" aria-label="Views"><div class="in">
+  <a href="#today" data-view="today">Today</a>
+  <a href="#week" data-view="week">Week</a>
+  <a href="#roadmap" data-view="roadmap">Roadmap</a>
+  <a href="#progress" data-view="progress">Progress</a>
+</div></nav>
+<script src="lessons/manifest.js"></script>
+<script>
+/* ===== Plan content ===== */
+const LC = s => 'https://leetcode.com/problems/' + s + '/';
+const P = (id, tier, topic, title, diff, url, video, extra) => Object.assign({ id, tier, topic, title, diff, url, video, track: 'dsa', kind: 'problem' }, extra || {});
+
+const DSA = [
+  /* ---------- Tier 1 · Core ---------- */
+  P('a1', 1, 'Arrays & Two Pointers', 'Two Sum', 'E', LC('two-sum')),
+  P('a2', 1, 'Arrays & Two Pointers', 'Remove Duplicates from Sorted Array', 'E', LC('remove-duplicates-from-sorted-array')),
+  P('a3', 1, 'Arrays & Two Pointers', 'Segregate 0s and 1s', 'E', 'https://www.geeksforgeeks.org/segregate-0s-and-1s-in-an-array-by-traversing-array-once/'),
+  P('a4', 1, 'Arrays & Two Pointers', 'Sort Colors', 'M', LC('sort-colors')),
+  P('a5', 1, 'Sliding Window', 'Max Consecutive Ones', 'E', LC('max-consecutive-ones')),
+  P('a6', 1, 'Sliding Window', 'Max Consecutive Ones III', 'M', LC('max-consecutive-ones-iii')),
+  P('a7', 1, 'Arrays & Two Pointers', '3Sum', 'M', LC('3sum')),
+  P('a8', 1, 'Arrays & Two Pointers', 'Container With Most Water', 'M', LC('container-with-most-water')),
+  P('h1', 1, 'Hashing', 'Contains Duplicate', 'E', LC('contains-duplicate')),
+  P('h2', 1, 'Hashing', 'Valid Anagram', 'E', LC('valid-anagram')),
+  P('h3', 1, 'Hashing', 'Top K Frequent Elements', 'M', LC('top-k-frequent-elements')),
+  P('h4', 1, 'Hashing', 'Subarray Sum Equals K', 'M', LC('subarray-sum-equals-k')),
+  P('h5', 2, 'Hashing', 'Longest Consecutive Sequence', 'M', LC('longest-consecutive-sequence')),
+  P('g1', 1, 'Greedy', 'Maximum Subarray (Kadane)', 'M', LC('maximum-subarray')),
+  P('g2', 1, 'Greedy', 'Best Time to Buy and Sell Stock', 'E', LC('best-time-to-buy-and-sell-stock')),
+  P('r1', 1, 'Recursion', 'Print 1 to N using recursion', 'T', null),
+  P('r2', 1, 'Recursion', 'Print N to 1 using recursion', 'T', null),
+  P('r3', 1, 'Recursion', 'Factorial using recursion', 'T', null),
+  P('r4', 1, 'Recursion', 'Length of a String using recursion', 'T', 'https://www.geeksforgeeks.org/program-for-length-of-a-string-using-recursion/'),
+  P('r5', 1, 'Recursion', 'Check if a Number is Palindrome', 'T', 'https://www.geeksforgeeks.org/check-if-a-number-is-palindrome/'),
+  P('r6', 1, 'Recursion', 'Fibonacci Number', 'E', LC('fibonacci-number')),
+  P('r7', 1, 'DP', 'Climbing Stairs', 'E', LC('climbing-stairs'), 'https://youtu.be/Y0lT9Fck7qI'),
+  P('r8', 1, 'Recursion', 'Pow(x, n)', 'M', LC('powx-n')),
+  P('r9', 2, 'Recursion', 'Generate Parentheses', 'M', LC('generate-parentheses')),
+  P('b1', 1, 'Binary Search', 'Binary Search', 'E', LC('binary-search')),
+  P('b2', 1, 'Binary Search', 'Lower Bound (Search Insert Position)', 'E', LC('search-insert-position')),
+  P('b3', 1, 'Binary Search', 'First and Last Position in Sorted Array', 'M', LC('find-first-and-last-position-of-element-in-sorted-array')),
+  P('b4', 1, 'Binary Search', 'Search in Rotated Sorted Array', 'M', LC('search-in-rotated-sorted-array')),
+  P('b5', 1, 'Binary Search', 'Koko Eating Bananas', 'M', LC('koko-eating-bananas')),
+  P('s1', 1, 'Sorting', 'Merge Sort', 'M', 'https://www.geeksforgeeks.org/problems/merge-sort/1'),
+  P('s2', 1, 'Sorting', 'Quick Sort', 'M', 'https://www.naukri.com/code360/problems/quick-sort_983625'),
+  P('l1', 1, 'Linked List', 'Linked List Insertion', 'T', 'https://www.geeksforgeeks.org/problems/linked-list-insertion-1587115620/0'),
+  P('l2', 1, 'Linked List', 'Count Nodes of Linked List', 'T', 'https://www.geeksforgeeks.org/problems/count-nodes-of-linked-list/0'),
+  P('l3', 1, 'Linked List', 'Search in Linked List', 'T', 'https://www.geeksforgeeks.org/problems/search-in-linked-list-1664434326/1'),
+  P('l4', 1, 'Linked List', 'Delete Node in a Linked List', 'E', LC('delete-node-in-a-linked-list')),
+  P('l5', 1, 'Linked List', 'Reverse Linked List', 'E', LC('reverse-linked-list')),
+  P('l6', 1, 'Linked List', 'Merge Two Sorted Lists', 'E', LC('merge-two-sorted-lists')),
+  P('l7', 1, 'Linked List', 'Linked List Cycle', 'E', LC('linked-list-cycle')),
+  P('l8', 1, 'Linked List', 'Palindrome Linked List', 'E', LC('palindrome-linked-list')),
+  P('l9', 2, 'Linked List', 'Add Two Numbers', 'M', LC('add-two-numbers')),
+  P('q1', 1, 'Stack & Queue', 'Valid Parentheses', 'E', LC('valid-parentheses')),
+  P('q2', 1, 'Stack & Queue', 'Min Stack', 'M', LC('min-stack')),
+  P('q3', 1, 'Stack & Queue', 'First Unique Character in a String', 'E', LC('first-unique-character-in-a-string')),
+  P('t1', 1, 'Trees', 'Binary Tree Preorder Traversal', 'E', LC('binary-tree-preorder-traversal')),
+  P('t2', 1, 'Trees', 'Binary Tree Inorder Traversal', 'E', LC('binary-tree-inorder-traversal')),
+  P('t3', 1, 'Trees', 'Binary Tree Postorder Traversal', 'E', LC('binary-tree-postorder-traversal')),
+  P('t4', 1, 'Trees', 'Maximum Depth of Binary Tree', 'E', LC('maximum-depth-of-binary-tree')),
+  P('t5', 1, 'Trees', 'Binary Tree Level Order Traversal', 'M', LC('binary-tree-level-order-traversal')),
+  P('t6', 1, 'Trees', 'Balanced Binary Tree', 'E', LC('balanced-binary-tree')),
+  P('t7', 2, 'Trees', 'Binary Tree Right Side View', 'M', LC('binary-tree-right-side-view')),
+  P('t8', 1, 'Trees', 'Diameter of Binary Tree', 'E', LC('diameter-of-binary-tree')),
+  P('p1', 1, 'Heaps', 'Last Stone Weight', 'E', LC('last-stone-weight')),
+  P('p2', 1, 'Heaps', 'Kth Largest Element in an Array', 'M', LC('kth-largest-element-in-an-array')),
+  P('gr1', 1, 'Graphs', 'Number of Islands', 'M', LC('number-of-islands')),
+  P('gr2', 1, 'Graphs', 'Rotting Oranges', 'M', LC('rotting-oranges')),
+  P('gr3', 1, 'Graphs', 'Course Schedule', 'M', LC('course-schedule')),
+  P('dp1', 1, 'DP', 'House Robber', 'M', LC('house-robber'), 'https://youtu.be/73r3KWiEvyk'),
+  P('dp2', 1, 'DP', 'Coin Change', 'M', LC('coin-change'), 'https://youtu.be/H9bfqozjoqs'),
+  P('dp3', 2, 'DP', 'Longest Common Subsequence', 'M', LC('longest-common-subsequence'), 'https://youtu.be/Ua0GhsJSlWM'),
+  P('i1', 1, 'Intervals', 'Merge Intervals', 'M', LC('merge-intervals')),
+
+  /* ---------- Tier 2 · Solid ---------- */
+  P('sw1', 2, 'Sliding Window', 'Longest Substring Without Repeating Characters', 'M', LC('longest-substring-without-repeating-characters')),
+  P('sw2', 2, 'Sliding Window', 'Longest Repeating Character Replacement', 'M', LC('longest-repeating-character-replacement')),
+  P('sw3', 2, 'Sliding Window', 'Minimum Window Substring', 'H', LC('minimum-window-substring')),
+  P('h6', 3, 'Hashing', '4Sum', 'M', LC('4sum')),
+  P('bt1', 2, 'Backtracking', 'Word Search', 'M', LC('word-search')),
+  P('bt2', 2, 'Backtracking', 'Word Break', 'M', LC('word-break')),
+  P('b6', 2, 'Binary Search', 'Find Peak Element', 'M', LC('find-peak-element')),
+  P('b7', 3, 'Binary Search', "Painter's Partition", 'M', 'https://www.naukri.com/code360/problems/painter-s-partition-problem_1089557'),
+  P('s3', 3, 'Sorting', 'Count Inversions', 'M', 'https://www.naukri.com/code360/problems/count-inversions_615'),
+  P('l10', 2, 'Linked List', 'Linked List Cycle II', 'M', LC('linked-list-cycle-ii')),
+  P('q4', 2, 'Stack & Queue', 'Evaluate Reverse Polish Notation', 'M', LC('evaluate-reverse-polish-notation')),
+  P('q5', 2, 'Stack & Queue', 'Next Greater Element II', 'M', LC('next-greater-element-ii')),
+  P('q6', 2, 'Stack & Queue', 'Largest Rectangle in Histogram', 'H', LC('largest-rectangle-in-histogram')),
+  P('t9', 2, 'Trees', 'Top View of Binary Tree', 'M', 'https://www.geeksforgeeks.org/problems/top-view-of-binary-tree/1'),
+  P('t11', 2, 'Trees', 'Lowest Common Ancestor of a Binary Tree', 'M', LC('lowest-common-ancestor-of-a-binary-tree')),
+  P('p3', 2, 'Heaps', 'K Closest Points to Origin', 'M', LC('k-closest-points-to-origin')),
+  P('gr4', 2, 'Graphs', 'Max Area of Island', 'M', LC('max-area-of-island')),
+  P('gr5', 2, 'Graphs', 'Surrounded Regions', 'M', LC('surrounded-regions')),
+  P('gr6', 2, 'Graphs', 'Course Schedule II', 'M', LC('course-schedule-ii')),
+  P('dp4', 2, 'DP', 'Unique Paths', 'M', LC('unique-paths')),
+  P('dp5', 2, 'DP', 'Decode Ways', 'M', LC('decode-ways')),
+  P('dp6', 2, 'DP', 'Target Sum', 'M', LC('target-sum'), 'https://www.youtube.com/watch?v=g0npyaQtAQM'),
+  P('dp7', 2, 'DP', 'Longest Increasing Subsequence', 'M', LC('longest-increasing-subsequence'), 'https://youtu.be/cjWnW0hdF1Y'),
+  P('dp8', 2, 'DP', 'Partition Equal Subset Sum', 'M', LC('partition-equal-subset-sum'), 'https://youtu.be/IsvocB5BJhw'),
+  P('dp9', 2, 'DP', 'Coin Change II', 'M', LC('coin-change-2'), 'https://www.youtube.com/watch?v=Mjy4hd2xgrs'),
+  P('dp10', 2, 'DP', 'Longest Palindromic Substring', 'M', LC('longest-palindromic-substring'), 'https://youtu.be/XYQecbcd6_c'),
+  P('dp12', 2, 'DP', 'Edit Distance', 'M', LC('edit-distance'), 'https://youtu.be/XYi2-LPrwm4'),
+  P('g3', 2, 'Greedy', 'Jump Game', 'M', LC('jump-game')),
+  P('g5', 3, 'Greedy', 'Partition Labels', 'M', LC('partition-labels')),
+  P('i2', 3, 'Intervals', 'Insert Interval', 'M', LC('insert-interval')),
+  P('ds1', 2, 'Hashing', 'Time Based Key-Value Store', 'M', LC('time-based-key-value-store')),
+
+  /* ---------- Tier 3 · FAANG (January) ---------- */
+  P('x1', 3, 'Sliding Window', 'Sliding Window Maximum', 'H', LC('sliding-window-maximum')),
+  P('x2', 3, 'Arrays & Two Pointers', 'Trapping Rain Water', 'H', LC('trapping-rain-water')),
+  P('x3', 3, 'Graphs', 'Pacific Atlantic Water Flow', 'M', LC('pacific-atlantic-water-flow')),
+  P('x4', 3, 'Graphs', 'Redundant Connection (Union-Find)', 'M', LC('redundant-connection')),
+  P('x5', 3, 'Graphs', 'Accounts Merge', 'M', LC('accounts-merge')),
+  P('x6', 3, 'Graphs', 'Network Delay Time (Dijkstra)', 'M', LC('network-delay-time')),
+  P('x7', 3, 'Graphs', 'Cheapest Flights Within K Stops', 'M', LC('cheapest-flights-within-k-stops')),
+  P('x8', 3, 'Graphs', 'Min Cost to Connect All Points (MST)', 'M', LC('min-cost-to-connect-all-points')),
+  P('x9', 3, 'Graphs', 'Word Ladder', 'H', LC('word-ladder')),
+  P('x10', 3, 'DP', 'Palindromic Substrings', 'M', LC('palindromic-substrings'), 'https://youtu.be/4RACzI5-du8'),
+  P('x11', 3, 'DP', 'Longest Palindromic Subsequence', 'M', LC('longest-palindromic-subsequence')),
+  P('x12', 3, 'DP', 'Minimum Cost For Tickets', 'M', LC('minimum-cost-for-tickets'), 'https://www.youtube.com/watch?v=4pY1bsBpIY4'),
+  P('x13', 3, 'DP', 'Maximum Alternating Subsequence Sum', 'M', LC('maximum-alternating-subsequence-sum'), 'https://youtu.be/4v42XOuU1XA', { bonus: true }),
+  P('x14', 3, 'DP', 'Interleaving String', 'M', LC('interleaving-string')),
+  P('x15', 3, 'DP', 'Distinct Subsequences', 'H', LC('distinct-subsequences'), 'https://youtu.be/-RDzMJ33nx8'),
+  P('x16', 3, 'DP', 'Longest Increasing Path in a Matrix', 'H', LC('longest-increasing-path-in-a-matrix')),
+  P('x17', 3, 'Heaps', 'Task Scheduler', 'M', LC('task-scheduler')),
+  P('x18', 3, 'Hashing', 'LRU Cache', 'M', LC('lru-cache')),
+  P('x19', 3, 'Heaps', 'Find Median from Data Stream', 'H', LC('find-median-from-data-stream')),
+  P('x20', 3, 'Linked List', 'Merge k Sorted Lists', 'H', LC('merge-k-sorted-lists')),
+  P('x21', 3, 'Greedy', 'Gas Station', 'M', LC('gas-station')),
+  P('x22', 3, 'Greedy', 'Jump Game II', 'M', LC('jump-game-ii')),
+  P('x23', 3, 'Greedy', 'Candy', 'H', LC('candy')),
+  P('x24', 3, 'Intervals', 'Non-overlapping Intervals', 'M', LC('non-overlapping-intervals')),
+  P('x25', 3, 'Trees', 'Bottom View of Binary Tree', 'M', 'https://www.geeksforgeeks.org/problems/bottom-view-of-binary-tree/1', null, { bonus: true }),
+  P('x26', 3, 'Trees', 'Binary Tree Maximum Path Sum', 'H', LC('binary-tree-maximum-path-sum')),
+  P('x27', 3, 'Trees', 'Time To Burn Tree', 'M', 'https://www.naukri.com/code360/problems/time-to-burn-tree_1469067'),
+  P('x28', 3, 'Trees', 'Serialize and Deserialize Binary Tree', 'H', LC('serialize-and-deserialize-binary-tree')),
+  P('x29', 3, 'Trees', 'Maximum Sum BST in Binary Tree', 'H', LC('maximum-sum-bst-in-binary-tree'), null, { bonus: true }),
+  P('x30', 3, 'Binary Search', 'Aggressive Cows', 'M', 'https://www.spoj.com/problems/AGGRCOW/'),
+  P('x31', 3, 'Backtracking', 'N-Queens', 'H', LC('n-queens')),
+  P('x32', 3, 'Backtracking', 'N-Queens II', 'H', LC('n-queens-ii'), null, { bonus: true }),
+  P('x33', 3, 'Backtracking', 'Rat in a Maze', 'M', 'https://leetcode.com/discuss/interview-question/2073103/rat-in-a-maze-problem', null, { bonus: true }),
+  P('x34', 3, 'Sorting', 'Reverse Pairs', 'H', LC('reverse-pairs')),
+  P('x35', 3, 'Sorting', 'Count of Smaller Numbers After Self', 'H', LC('count-of-smaller-numbers-after-self'), null, { bonus: true }),
+  P('x36', 3, 'Tries', 'Implement Trie (Prefix Tree)', 'M', LC('implement-trie-prefix-tree')),
+  P('x37', 3, 'Tries', 'Design Add and Search Words', 'M', LC('design-add-and-search-words-data-structure')),
+  P('x38', 3, 'Tries', 'Word Search II', 'H', LC('word-search-ii'))
+];
+
+/* Theory items: kind = concept (weekday, ~40 min) | hld (Saturday) | lld (Sunday) | task */
+const T = (id, tier, topic, kind, title, qs, extra) => Object.assign({ id, tier, topic, kind, title, qs, track: 'th' }, extra || {});
+const TH = [
+  /* ---------- Tier 1 ---------- */
+  T('c1', 1, 'Java', 'concept', 'Java OOP essentials', [
+    'Explain the four OOP pillars using an example from your own project.',
+    'Abstract class vs interface (with default, static and private methods): when do you use each?',
+    'Overloading vs overriding. Can you override a static or private method?',
+    'What does final mean on a variable, a method and a class?',
+    'Composition vs inheritance: why is composition usually preferred?',
+    'Is Java pass-by-value or pass-by-reference? Prove it with an object example.']),
+  T('c2', 1, 'Java', 'concept', 'Strings, equality and exceptions', [
+    'Why is String immutable, and what is the String pool?',
+    'String vs StringBuilder vs StringBuffer.',
+    'The equals() and hashCode() contract. What breaks in a HashMap if you violate it?',
+    'How do you make a class immutable (including mutable fields like a List or Date)?',
+    'Checked vs unchecked exceptions. When would you create a custom exception?',
+    'How does try-with-resources work, and what happens if close() also throws?']),
+  T('c3', 1, 'Java', 'concept', 'Collections internals', [
+    'How does HashMap work internally: hashing, buckets, collisions, treeification at 8?',
+    'What happens on resize? What is the load factor and why 0.75?',
+    'HashMap vs Hashtable vs ConcurrentHashMap vs Collections.synchronizedMap.',
+    'ArrayList vs LinkedList: complexities and when you would actually pick LinkedList.',
+    'Fail-fast vs fail-safe iterators. What causes ConcurrentModificationException?',
+    'TreeMap ordering; Comparable vs Comparator.'], { read: 'https://www.youtube.com/watch?v=eNoli_ENjcE', readLabel: 'HashMap internals video' }),
+  T('c4', 1, 'Java', 'concept', 'Java 8 functional: lambdas, streams, Optional', [
+    'What is a functional interface? Name four from java.util.function.',
+    'Intermediate vs terminal stream operations; what lazy evaluation means.',
+    'map vs flatMap. Group employees by department and count them with Collectors.groupingBy.',
+    'Optional: good uses and anti-patterns (Optional fields, get() without a check).',
+    'When do parallel streams hurt performance?',
+    'Code it: frequency of each character in a string, and the 2nd highest salary, using streams.']),
+  T('c5', 1, 'Java', 'concept', 'Modern Java 17 / 21 features', [
+    'What does a record generate? Can a record validate its fields?',
+    'Sealed classes and how they pair with pattern-matching switch.',
+    'Pattern matching for instanceof and switch; record patterns.',
+    'var: where is it allowed and what are the pitfalls?',
+    'Switch expressions with yield; text blocks.',
+    'Which Java version does your project use, and what would you gain moving to 21 or 25?']),
+  T('c6', 1, 'Java', 'concept', 'JVM memory and garbage collection', [
+    'JVM memory areas: heap (young/old), stack, metaspace. What lives where?',
+    'How does GC work? Minor vs major/full GC.',
+    'G1 vs ZGC: trade-offs and how you would choose.',
+    'Common causes of memory leaks in Java and how you debug them (heap dump, JFR, VisualVM).',
+    'Types of OutOfMemoryError; StackOverflowError.',
+    'Class loaders: bootstrap, platform, application; parent delegation.']),
+  T('c7', 1, 'Java', 'concept', 'Multithreading basics', [
+    'Process vs thread. The thread lifecycle states.',
+    'Runnable vs Callable. Thread.start() vs run().',
+    'synchronized method vs block; what an intrinsic lock is.',
+    'volatile and the visibility problem; what happens-before means.',
+    'wait/notify vs sleep. Sketch a producer-consumer.',
+    'Deadlock: the four conditions and how to prevent it.']),
+  T('c8', 1, 'Spring', 'concept', 'Spring core: IoC, DI and beans', [
+    'What are IoC and DI? Constructor vs setter vs field injection: which do you use and why?',
+    'Bean scopes. What happens when you inject a prototype bean into a singleton?',
+    'Bean lifecycle: @PostConstruct, @PreDestroy, BeanPostProcessor.',
+    '@Component vs @Bean vs @Configuration (and proxyBeanMethods).',
+    'Two beans of the same type: @Qualifier vs @Primary.',
+    'Circular dependencies: how Spring handles them and why Boot rejects them by default.']),
+  T('c9', 1, 'Spring', 'concept', 'Spring Boot internals and configuration', [
+    'What does @SpringBootApplication do?',
+    'How does auto-configuration work (@Conditional annotations, AutoConfiguration.imports)?',
+    'What is a starter? How do you exclude an auto-configuration?',
+    'Profiles and property precedence; @ConfigurationProperties vs @Value.',
+    'Which Actuator endpoints would you expose in production, and how do you secure them?',
+    'Embedded server: how to switch Tomcat to Jetty; the startup flow at a high level.']),
+  T('c10', 1, 'Spring', 'concept', 'REST APIs in Spring', [
+    'Design REST endpoints for an Order resource: methods, URLs, status codes.',
+    '@RequestParam vs @PathVariable vs @RequestBody; @RestController vs @Controller.',
+    'Global error handling with @ControllerAdvice and ProblemDetail.',
+    'Bean Validation with @Valid; writing a custom validator.',
+    'Filters vs interceptors vs AOP: where each runs in a request.',
+    'Idempotency: PUT vs POST, and idempotency keys for payment APIs.',
+    'Pagination and sorting with Pageable.']),
+  T('c11', 1, 'Spring', 'concept', 'Spring Data JPA and Hibernate', [
+    'JPA vs Hibernate vs Spring Data JPA.',
+    'Relationship mappings; owning side and mappedBy.',
+    'Lazy vs eager loading; LazyInitializationException; open-in-view.',
+    'The N+1 problem and three ways to fix it (fetch join, @EntityGraph, batch size).',
+    'Entity states (transient, managed, detached, removed); persist vs merge.',
+    'Optimistic (@Version) vs pessimistic locking.',
+    'Derived query methods, @Query, projections.']),
+  T('c12', 1, 'Spring', 'concept', 'Transactions with @Transactional', [
+    'How does @Transactional work? Why does self-invocation skip the transaction?',
+    'Propagation: REQUIRED vs REQUIRES_NEW vs NESTED, with a real example.',
+    'Isolation levels and the anomalies they prevent (dirty, non-repeatable, phantom reads).',
+    'Rollback rules: checked vs unchecked exceptions; rollbackFor.',
+    'What does readOnly = true change? Does @Transactional work on private methods?',
+    'Why avoid distributed transactions across services, and what do you use instead?']),
+  T('c13', 1, 'Java', 'concept', 'SQL for interviews', [
+    'Inner, left, right, full and self joins, each with an example.',
+    'Nth highest salary three ways: subquery, LIMIT/OFFSET, DENSE_RANK().',
+    'WHERE vs HAVING; GROUP BY rules.',
+    'Window functions: ROW_NUMBER, RANK, DENSE_RANK, running totals.',
+    'Indexes: B-tree, composite index column order, when an index is not used.',
+    'Find duplicate rows and delete all but one.']),
+  T('c14', 1, 'Interview', 'task', 'Your project deep-dive', [
+    'Write a 2-minute pitch: the problem, the users, the scale.',
+    'Draw your architecture: services, databases, queues, external calls.',
+    'Your two hardest technical problems and how you solved them (STAR format).',
+    'Know your numbers: requests per day, latency, data size, team size.',
+    'One thing you would redesign today, and why.',
+    'Why are you switching? Keep the answer forward-looking.']),
+  T('sd1', 1, 'System Design', 'concept', 'System design basics', [
+    'Vertical vs horizontal scaling; why stateless services scale.',
+    'Load balancers: L4 vs L7; round robin, least connections, consistent hashing.',
+    'Latency vs throughput; p50 vs p99.',
+    'Availability in nines; redundancy; single points of failure.',
+    'Forward vs reverse proxy; what a CDN does.',
+    'The interview framework: requirements, estimates, API, data model, high-level design, deep dives.'], { read: 'https://github.com/donnemartin/system-design-primer', readLabel: 'System Design Primer' }),
+  T('sd2', 1, 'System Design', 'concept', 'Databases for design', [
+    'SQL vs NoSQL: how do you choose? Types of NoSQL stores.',
+    'Indexes and their cost on writes.',
+    'Replication: leader-follower, read replicas, replication lag.',
+    'ACID vs BASE.',
+    'Normalization vs denormalization for read-heavy systems.',
+    'When would you pick Postgres, MongoDB, Cassandra or Redis?']),
+  T('sd3', 1, 'System Design', 'concept', 'Caching and Redis', [
+    'Cache-aside vs write-through vs write-back.',
+    'Eviction policies: LRU, LFU, TTL.',
+    'Cache invalidation, stale data and cache stampede.',
+    'Redis data structures and use cases: sessions, rate limits, leaderboards.',
+    'Local cache (Caffeine) vs distributed cache (Redis); Spring @Cacheable.',
+    'What should never be cached?']),
+  T('sd4', 1, 'System Design', 'concept', 'API design', [
+    'Resource naming and a status-code cheat sheet.',
+    'Pagination: offset vs cursor, and when offset breaks.',
+    'API versioning strategies (URI, header, media type).',
+    'Idempotency keys and safe retries.',
+    'REST vs gRPC vs GraphQL: when to use which.',
+    'API auth at a high level: API keys, JWT, OAuth2.']),
+  T('ld1', 1, 'LLD', 'concept', 'SOLID and OOP design principles', [
+    'Explain each SOLID principle with a small Java example.',
+    'A SOLID violation you have seen in real code and how you would refactor it.',
+    'DRY, KISS, YAGNI; coupling vs cohesion.',
+    'How to run an LLD round: requirements, entities, relationships, classes, then code.']),
+  T('ld2', 1, 'LLD', 'concept', 'Design patterns I', [
+    'Thread-safe Singleton: double-checked locking vs holder class vs enum.',
+    'Factory vs Abstract Factory, with an example.',
+    'Builder: why it helps with many optional fields (and Lombok @Builder).',
+    'Strategy: replacing an if-else chain such as payment methods.',
+    'Observer: event systems and Spring ApplicationEvent.',
+    'Which patterns does Spring itself use?']),
+  T('lp1', 1, 'LLD', 'lld', 'LLD: Parking Lot', [
+    'Requirements: floors, vehicle types, spot sizes, tickets, payment.',
+    'Identify entities and relationships; draw the class diagram.',
+    'Spot allocation strategy and pricing strategy (Strategy pattern).',
+    'Concurrency: two cars grabbing the same spot.',
+    'Code the core classes in 60 minutes, then extend for EV charging spots.']),
+  T('lp2', 1, 'LLD', 'lld', 'LLD: LRU Cache', [
+    'Design get/put in O(1) with HashMap + doubly linked list.',
+    'Make it generic and thread-safe.',
+    'Compare with LinkedHashMap(accessOrder = true) + removeEldestEntry.',
+    'Code it fully and write a few unit tests.']),
+
+  /* ---------- Tier 2 ---------- */
+  T('c15', 2, 'Java', 'concept', 'Concurrency: executors and CompletableFuture', [
+    'ExecutorService types; sizing a pool for CPU-bound vs I/O-bound work.',
+    'Future vs CompletableFuture; thenApply vs thenCompose; allOf.',
+    'ReentrantLock vs synchronized; ReadWriteLock; tryLock.',
+    'Atomic classes and compare-and-swap.',
+    'ConcurrentHashMap internals since Java 8.',
+    'CountDownLatch vs CyclicBarrier vs Semaphore.']),
+  T('c16', 2, 'Java', 'concept', 'Virtual threads and modern concurrency', [
+    'Platform vs virtual threads; how virtual threads run on carrier threads.',
+    'When virtual threads help (I/O-bound) and when they do not (CPU-bound).',
+    'What pinning is, and the Java 24 change that removed pinning for synchronized.',
+    'Turning them on in Spring Boot (spring.threads.virtual.enabled) and what changes.',
+    'ThreadLocal pitfalls; scoped values as the replacement.',
+    'What problem structured concurrency solves.']),
+  T('c17', 2, 'Spring', 'concept', 'Spring AOP and proxies', [
+    'AOP terms: aspect, advice, pointcut, join point.',
+    'JDK dynamic proxy vs CGLIB: when each is used.',
+    'Why @Transactional, @Async and @Cacheable fail on self-invocation and private methods.',
+    '@Async: executor configuration, return types, exception handling.',
+    'Write an aspect that logs execution time of service methods.']),
+  T('c18', 2, 'Spring', 'concept', 'Spring Security, JWT and OAuth2', [
+    'The security filter chain; configuring a SecurityFilterChain bean.',
+    'Authentication vs authorization; @PreAuthorize.',
+    'JWT: structure, signing, validation, expiry, refresh tokens.',
+    'OAuth2 / OIDC authorization code flow; resource server setup.',
+    'BCrypt password hashing; CSRF and CORS and when to disable CSRF.',
+    'Stateless token auth vs session-based auth.']),
+  T('c19', 2, 'Spring', 'concept', 'Microservices fundamentals', [
+    'Monolith vs microservices; how you would split a monolith.',
+    'API gateway responsibilities; service discovery.',
+    'Sync calls (RestClient, HTTP interface clients, Feign) vs async events.',
+    'Database per service and keeping data consistent across services.',
+    'Central config and distributed tracing with correlation IDs.',
+    'What happens in your system when a downstream service is slow?']),
+  T('c20', 2, 'Spring', 'concept', 'Resilience patterns', [
+    'Circuit breaker states and thresholds.',
+    'Retry with exponential backoff and jitter; why retries need idempotency.',
+    'Timeouts, bulkheads, rate limiters.',
+    'Fallbacks and graceful degradation.',
+    'Resilience4j with Spring Boot; the built-in @Retryable and @ConcurrencyLimit in Spring Framework 7.']),
+  T('c21', 2, 'Spring', 'concept', 'Kafka and messaging with Spring', [
+    'Topic, partition, offset, consumer group: how parallelism works.',
+    'At-most-once, at-least-once, exactly-once; the idempotent producer.',
+    'Ordering guarantees and choosing a partition key.',
+    'Consumer lag, rebalancing, offset commit strategies.',
+    'Retries and dead-letter topics in Spring Kafka.',
+    'Kafka vs RabbitMQ: when to use which.']),
+  T('c22', 2, 'Spring', 'concept', 'Testing Spring Boot apps', [
+    'Unit vs integration vs slice tests.',
+    '@SpringBootTest vs @WebMvcTest vs @DataJpaTest.',
+    'Mockito mock vs spy; @MockitoBean (the replacement for @MockBean).',
+    'Testcontainers for a real database or Kafka.',
+    'Testing a controller with MockMvc.',
+    'Your testing strategy and what coverage means to you.']),
+  T('c23', 2, 'Spring', 'concept', 'Docker, Kubernetes and observability', [
+    'A Dockerfile for a Boot app; layered jars; keeping images small.',
+    'Pod, Deployment, Service, ConfigMap, Secret.',
+    'Liveness vs readiness probes using Actuator.',
+    'Logs, metrics, traces: Micrometer, Prometheus, Grafana, OpenTelemetry.',
+    'Rolling vs blue-green vs canary deployments.']),
+  T('sd5', 2, 'System Design', 'concept', 'Sharding, consistent hashing and CAP', [
+    'Range vs hash vs directory partitioning; hot partitions.',
+    'Consistent hashing and virtual nodes.',
+    'CAP and PACELC: what would you pick for payments vs a social feed?',
+    'Strong vs eventual consistency; read-your-writes.',
+    'Why re-sharding is painful and how to plan for it.']),
+  T('sd6', 2, 'System Design', 'concept', 'Estimation and the design framework', [
+    'Estimate QPS, storage and bandwidth for an app with 10M daily users.',
+    'Powers of two and latency numbers worth memorising.',
+    'Read-heavy vs write-heavy designs: what changes?',
+    'Practice: run the full framework on "Design Pastebin" in 15 minutes.']),
+  T('ld3', 2, 'LLD', 'concept', 'Design patterns II', [
+    'Decorator vs inheritance; Java I/O as an example.',
+    'Adapter and Facade.',
+    'Command and Chain of Responsibility (servlet filters are one).',
+    'State pattern vs a big switch; Template Method.']),
+  T('hd1', 2, 'System Design', 'hld', 'HLD: URL Shortener', [
+    'Requirements and estimates (reads far exceed writes).',
+    'ID generation: counter + base62 vs hashing; handling collisions; custom aliases.',
+    'Storage choice and caching hot links.',
+    'Redirect 301 vs 302 and click analytics.',
+    'Expiry and cleanup.']),
+  T('hd2', 2, 'System Design', 'hld', 'HLD: Rate Limiter', [
+    'Token bucket, leaky bucket, fixed window, sliding window log and counter.',
+    'Where it lives: gateway vs inside each service.',
+    'Distributed counting with Redis (atomic Lua script).',
+    'Response headers and 429 handling.',
+    'Per-user vs per-IP vs per-API key limits.']),
+  T('hd3', 2, 'System Design', 'hld', 'HLD: Notification System', [
+    'Channels: email, SMS, push; a queue per channel.',
+    'Templates and user preferences / opt-outs.',
+    'Retries, deduplication and idempotency.',
+    'Rate limiting outbound providers; priority messages.',
+    'Tracking delivery status.']),
+  T('lp3', 2, 'LLD', 'lld', 'LLD: Splitwise', [
+    'Users, groups, expenses; equal, exact and percentage splits (Strategy).',
+    'Balance sheet design and simplifying debts.',
+    'Validation and edge cases (rounding).',
+    'Code the core in 60 minutes.']),
+  T('lp4', 2, 'LLD', 'lld', 'LLD: Movie ticket booking (BookMyShow)', [
+    'Entities: cinema, screen, show, seat, booking, payment.',
+    'Seat locking while the user pays; timeouts.',
+    'Concurrency: two users booking the same seat.',
+    'Code booking flow end to end.']),
+  T('lp5', 2, 'LLD', 'lld', 'LLD: Snake and Ladder', [
+    'Board, dice, players, snakes, ladders, game loop.',
+    'Make it extensible: multiple dice, custom boards.',
+    'Code it fully in 60 minutes with a runnable main.']),
+
+  /* ---------- Consolidation (last days before the target-company deadline) ---------- */
+  T('k1', 'C', 'Interview', 'task', 'Re-solve every problem you rated Hard', [
+    'Open Progress → "Rated Hard" and re-solve each from scratch without hints.',
+    'Write one line per problem on what you missed the first time.']),
+  T('k2', 'C', 'Interview', 'task', 'Mock round: DSA #1', [
+    'Two medium problems in 45 minutes, talking aloud the whole time.',
+    'Use a friend, Pramp, or record yourself with a timer.',
+    'Note where you went silent or got stuck.']),
+  T('k3', 'C', 'Interview', 'task', 'Mock round: Java and Spring rapid-fire', [
+    'Answer 30 questions from the Java and Spring cards aloud, 1 minute each.',
+    'Mark the ones you fumbled and review those cards again.']),
+  T('k4', 'C', 'Interview', 'hld', 'Mock round: HLD in 45 minutes', [
+    'Pick URL Shortener or Notification System and design it on a timer.',
+    'Cover requirements, estimates, API, data model, diagram, one deep dive.']),
+  T('k5', 'C', 'Interview', 'lld', 'Mock round: LLD machine coding (90 min)', [
+    'Pick a new problem (e.g. Library Management) and code it in 90 minutes.',
+    'Runnable code, clean classes, at least one pattern used well.']),
+  T('k6', 'C', 'Interview', 'task', 'Behavioral stories (STAR)', [
+    'Prepare six stories: conflict, failure, ownership, tight deadline, disagreement with a senior, learning something fast.',
+    'Tell me about yourself: 90 seconds, rehearsed.']),
+  T('k7', 'C', 'Interview', 'task', 'Mock round: DSA #2', [
+    'Two new medium problems in 45 minutes, aloud.',
+    'Compare with mock #1: what improved?']),
+  T('k8', 'C', 'Interview', 'task', 'Resume and project story final pass', [
+    'Update resume bullets with numbers.',
+    'Rehearse the project deep-dive once more.']),
+
+  /* ---------- Tier 3 · FAANG (January) ---------- */
+  T('c24', 3, 'Spring', 'concept', "What's new: Spring Boot 4 and Spring Framework 7", [
+    'Boot 4 modularization: smaller starters and why it matters.',
+    'Built-in API versioning.',
+    'JSpecify null-safety annotations.',
+    'Jackson 3 as default; HTTP service clients.',
+    'Built-in resilience: @Retryable, @ConcurrencyLimit.',
+    'What Boot 4.1 added (gRPC starters, SSRF protection) and how you would migrate from 3.5.']),
+  T('c25', 3, 'Java', 'concept', "What's new: Java 21 to 25", [
+    'Virtual thread pinning fix (JDK 24).',
+    'Scoped values (final in 25) and structured concurrency (preview).',
+    'Stream gatherers.',
+    'Foreign Function & Memory API.',
+    'Generational ZGC and Project Leyden startup improvements.']),
+  T('sd7', 3, 'System Design', 'concept', 'Distributed transactions and consistency', [
+    'Two-phase commit and why it is rarely used.',
+    'Saga: choreography vs orchestration; compensating actions.',
+    'Transactional outbox and idempotent consumers.',
+    'Quorum reads/writes; leader election basics.',
+    'Why exactly-once is mostly a myth end to end.']),
+  T('sd8', 3, 'System Design', 'concept', 'Reliability at scale', [
+    'SLI, SLO, error budgets.',
+    'Backpressure and retry storms.',
+    'Graceful degradation and load shedding.',
+    'Multi-region active-passive vs active-active; disaster recovery.']),
+  T('sd9', 3, 'System Design', 'concept', 'Search, blob storage and CDN', [
+    'Inverted index basics; when to add Elasticsearch.',
+    'Object storage, presigned URLs, multipart upload.',
+    'CDN caching, cache keys, invalidation.']),
+  T('hd4', 3, 'System Design', 'hld', 'HLD: News Feed', [
+    'Fan-out on write vs fan-out on read; the celebrity problem.',
+    'Feed storage and caching.',
+    'Ranking at a high level; pagination of the feed.']),
+  T('hd5', 3, 'System Design', 'hld', 'HLD: Chat App', [
+    'WebSockets and connection management.',
+    'Message ordering, delivery and read receipts.',
+    'Presence; group chat fan-out; message storage.']),
+  T('hd6', 3, 'System Design', 'hld', 'HLD: Ride-hailing (nearby drivers)', [
+    'Location updates at scale; geohash vs quadtree.',
+    'Matching riders and drivers.',
+    'Trip state machine and surge pricing at a high level.']),
+  T('hd7', 3, 'System Design', 'hld', 'HLD: Payment System', [
+    'Idempotency end to end.',
+    'Double-entry ledger.',
+    'Talking to payment providers; webhooks; reconciliation.']),
+  T('hd8', 3, 'System Design', 'hld', 'HLD: Movie Ticket Booking', [
+    'Seat holds under heavy contention.',
+    'Booking flow with payment and timeouts.',
+    'Handling a hot show with thousands of users.']),
+  T('lp6', 3, 'LLD', 'lld', 'LLD: Elevator System', [
+    'State pattern for elevator states.',
+    'Scheduling requests across elevators.',
+    'Code the controller and simulation.']),
+  T('lp7', 3, 'LLD', 'lld', 'LLD: Vending Machine', [
+    'State pattern: idle, has money, dispensing.',
+    'Inventory and change handling.',
+    'Code it with tests.']),
+  T('lp8', 3, 'LLD', 'lld', 'LLD: Rate Limiter (in code)', [
+    'Strategy for token bucket vs sliding window.',
+    'Thread-safe implementation.',
+    'Per-client configuration.']),
+  T('lp9', 3, 'LLD', 'lld', 'LLD: Library Management', [
+    'Books, copies, members, loans, fines.',
+    'Search and reservations.',
+    'Code in 90 minutes as a machine-coding mock.']),
+  T('y1', 3, 'Interview', 'task', 'Behavioral, FAANG style', [
+    'Map your six STAR stories to leadership-principle style questions (ownership, customer focus, dive deep, bias for action).',
+    'Add measurable outcomes to every story.'], { mock: true }),
+  T('y2', 3, 'Interview', 'task', 'FAANG mock round #1 (DSA)', ['One medium + one hard in 45 minutes, aloud.'], { mock: true }),
+  T('y3', 3, 'Interview', 'task', 'FAANG mock round #2 (system design)', ['Pick News Feed or Chat and present it in 45 minutes.'], { mock: true }),
+  T('y4', 3, 'Interview', 'task', 'FAANG mock round #3 (DSA)', ['Two new problems under time pressure.'], { mock: true }),
+  T('y5', 3, 'Interview', 'task', 'FAANG mock round #4 (full loop)', ['DSA + design + behavioral back to back.'], { mock: true })
+];
+
+const TIER_RANK = { 1: 0, 2: 1, C: 2, 3: 3 };
+const byTier = arr => arr.map((it, i) => [it, i]).sort((a, b) => (TIER_RANK[a[0].tier] - TIER_RANK[b[0].tier]) || (a[1] - b[1])).map(x => x[0]);
+const ALL_ITEMS = byTier(DSA).concat(byTier(TH));
+let ITEMS = ALL_ITEMS;
+const BY_ID = Object.fromEntries(ALL_ITEMS.map(i => [i.id, i]));
+
+/* ===== Dates ===== */
+let START = '2026-11-04', END = '2027-01-31', CONSOL_START = '2026-12-21', FAANG_START = '2027-01-01', TARGET = '2026-12-31';
+let FAANG_ON = true, SCALE_WD = 1, SCALE_WE = 1, PLAN_DAYS = 89;
+const TIERS = {
+  1: { key: 1, name: 'Tier 1 · Core', short: 'Core', target: '2026-11-30', blurb: 'Must-know problems and Java/Spring basics. Enough for typical mid-level interviews.' },
+  2: { key: 2, name: 'Tier 2 · Solid', short: 'Solid', target: '2026-12-20', blurb: 'Common mediums, concurrency, security, microservices, first HLD and LLD rounds.' },
+  C: { key: 'C', name: 'Consolidation', short: 'Consolidation', target: '2026-12-31', blurb: '' },
+  3: { key: 3, name: 'Tier 3 · FAANG', short: 'FAANG', target: '2027-01-31', blurb: 'Harder graphs, DP, heaps and tries, deeper system design, weekly mocks.' }
+};
+let TIER_ORDER = [1, 2, 'C', 3];
+
+
+function pd(s) { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d, 12); }
+function fd(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function addDays(s, n) { const d = pd(s); d.setDate(d.getDate() + n); return fd(d); }
+function dow(s) { return pd(s).getDay(); }
+function dayDiff(a, b) { return Math.round((pd(b) - pd(a)) / 864e5); }
+const fmtD = s => pd(s).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+
+/* Turn a person's settings into tier dates, phase windows and daily budgets. */
+function defaultConfig(today) {
+  const start = today;
+  const target = addDays(start, 57);
+  return { name: '', start, target, faang: true, faangTarget: addDays(target, 31), hWd: 2.5, hWe: 3 };
+}
+function applyConfig(c) {
+  START = c.start; TARGET = c.target; FAANG_ON = !!c.faang;
+  END = FAANG_ON ? c.faangTarget : c.target;
+  PLAN_DAYS = dayDiff(START, END) + 1;
+  SCALE_WD = (c.hWd || 2.5) / 2.5; SCALE_WE = (c.hWe || 3) / 3;
+  const span = dayDiff(START, TARGET) + 1;
+  const cDays = Math.max(3, Math.min(11, Math.round(span * 0.19)));
+  CONSOL_START = addDays(TARGET, -(cDays - 1));
+  const w = t => ALL_ITEMS.filter(i => i.tier === t && !i.bonus).reduce((a, i) => a + mins(i), 0);
+  const work = dayDiff(START, CONSOL_START);
+  TIERS[1].target = addDays(START, Math.max(1, Math.round(work * w(1) / (w(1) + w(2)))) - 1);
+  TIERS[2].target = addDays(CONSOL_START, -1);
+  TIERS.C.target = TARGET;
+  TIERS.C.blurb = 'Revision, mock rounds and buffer. Ready for target companies on ' + fmtD(TARGET) + '.';
+  FAANG_START = addDays(TARGET, 1);
+  TIERS[3].target = END;
+  const fSpan = Math.max(1, dayDiff(FAANG_START, END));
+  [4, 6, 13, 20, 26].forEach((k, n) => { BY_ID['y' + (n + 1)].nb = addDays(FAANG_START, Math.round(fSpan * k / 30)); });
+  ITEMS = FAANG_ON ? ALL_ITEMS : ALL_ITEMS.filter(i => i.tier !== 3);
+  TIER_ORDER = FAANG_ON ? [1, 2, 'C', 3] : [1, 2, 'C'];
+}
+
+/* ===== Effort model ===== */
+const MIN = { T: 15, E: 30, M: 60, H: 75 };
+const KMIN = { concept: 40, hld: 70, lld: 80, task: 50 };
+const IV = [1, 3, 7, 16, 35];
+function mins(it) { return it.track === 'dsa' ? MIN[it.diff] : KMIN[it.kind]; }
+function revisable(it) { return it.track === 'dsa' || it.kind !== 'task'; }
+function budget(day) {
+  const w = dow(day), f = (w === 0 || w === 6) ? SCALE_WE : SCALE_WD;
+  const b = baseBudget(w);
+  return { dsa: Math.round(b.dsa * f), th: Math.round(b.th * f) };
+}
+function baseBudget(w) {
+  if (w === 0) return { dsa: 70, th: 80 };   // Sunday: LLD slot
+  if (w === 6) return { dsa: 100, th: 70 };   // Saturday: HLD slot
+  if (w === 2 || w === 4) return { dsa: 65, th: 40 };   // Tue, Thu: lighter
+  return { dsa: 120, th: 40 };                          // Mon, Wed, Fri: two problems
+}
+
+/* ===== Scheduling ===== */
+function itemState(st, id) { return (st.items && st.items[id]) || {}; }
+function tier3Unlocked(st) {
+  return ITEMS.every(it => it.tier === 3 || it.tier === 'C' || itemState(st, it.id).s === 'd');
+}
+function notBefore(it, unl) {
+  if (it.nb) return it.nb;
+  if (it.tier === 'C') return CONSOL_START;
+  if (it.tier === 3 && !unl) return FAANG_START;
+  return null;
+}
+
+/* Lays every unfinished item onto days from `today` forward.
+   Missed days need no special handling: unfinished work simply starts again from today. */
+function schedule(st, today) {
+  const S = id => itemState(st, id);
+  const unl = tier3Unlocked(st);
+  const days = {}, at = {};
+  const pend = { dsa: [], th: [] };
+  for (const it of ITEMS) if (S(it.id).s !== 'd' && (!it.bonus || S(it.id).s === 's')) pend[it.track].push(it);
+  let remaining = pend.dsa.length + pend.th.length;
+  let day = today;
+  const LIMIT = addDays(END, 240);
+  while (remaining > 0 && day <= LIMIT) {
+    const b = budget(day);
+    const rec = { dsa: [], th: [] };
+    let dsaUsed = 0;
+    for (const tr of ['dsa', 'th']) {
+      let used = 0;
+      const cap = tr === 'th' && day >= CONSOL_START && day <= TARGET ? b.th + Math.max(0, b.dsa - dsaUsed) : b[tr];
+      if (day === today) {
+        for (const it of ITEMS) {
+          if (it.track !== tr) continue;
+          const s = S(it.id);
+          if (s.s === 'd' && s.done === today) used += mins(it);
+        }
+        for (const it of pend[tr]) {
+          if (S(it.id).s === 's') { rec[tr].push(it.id); at[it.id] = day; used += mins(it); remaining--; }
+        }
+      }
+      let cands = pend[tr].filter(it => !at[it.id] && (() => { const n = notBefore(it, unl); return !n || n <= day; })());
+      if (tr === 'th') {
+        const w = dow(day);
+        const pref = w === 6 ? 'hld' : w === 0 ? 'lld' : null;
+        if (pref) {
+          const i = cands.length ? cands.findIndex(c => c.kind === pref && c.tier === cands[0].tier) : -1;
+          if (i > 0) { const c = cands.splice(i, 1)[0]; cands.unshift(c); }
+        } else {
+          const other = cands.filter(c => c.kind !== 'hld' && c.kind !== 'lld');
+          if (other.length) cands = other;
+        }
+      }
+      for (const it of cands) {
+        const m = mins(it);
+        if (used === 0 || used + m <= cap + 15) { rec[tr].push(it.id); at[it.id] = day; used += m; remaining--; }
+        else break;
+      }
+      if (tr === 'dsa') dsaUsed = used;
+    }
+    days[day] = rec;
+    day = addDays(day, 1);
+  }
+  const finish = {};
+  for (const t of TIER_ORDER) {
+    const list = ITEMS.filter(i => i.tier === t && (!i.bonus || itemState(st, i.id).s));
+    let max = null, unscheduled = false;
+    for (const it of list) {
+      const s = S(it.id);
+      const d = s.s === 'd' ? s.done : at[it.id];
+      if (!d) { unscheduled = true; continue; }
+      if (!max || d > max) max = d;
+    }
+    finish[t] = unscheduled ? null : max;
+  }
+  return { days, at, finish, unlocked: unl };
+}
+
+/* ===== Spaced revision ===== */
+function nextReview(s, rating, today) {
+  let stage = s.stage || 0;
+  if (rating === 'hard') stage = 0;
+  else if (rating === 'ok') stage = Math.min(stage + 1, IV.length - 1);
+  else stage = Math.min(stage + 2, IV.length - 1);
+  return { stage, due: addDays(today, IV[stage]) };
+}
+function previewInterval(s, rating) {
+  let stage = s.stage || 0;
+  if (rating === 'hard') stage = 0;
+  else if (rating === 'ok') stage = Math.min(stage + 1, IV.length - 1);
+  else stage = Math.min(stage + 2, IV.length - 1);
+  return IV[stage];
+}
+function tierOf(day) {
+  if (day <= TIERS[1].target) return 1;
+  if (day <= TIERS[2].target) return 2;
+  if (day <= TIERS.C.target || !FAANG_ON) return 'C';
+  return 3;
+}
+
+/* ===== State (offline: browser storage + optional linked file) ===== */
+const LS_KEY = 'switch-prep-v1', LS_SAVED = 'switch-prep-lastfile';
+let st = { v: 1, items: {} };
+let pendingRender = false, lsOK = true;
+let fileHandle = null, fileName = '', fileNeedsPermission = false, fileWriting = false, fileDirty = false, fileErr = false, fileTimer = null;
+let pendingImport = null;
+const FS_OK = typeof window.showDirectoryPicker === 'function';
+const DIFF = { T: 'Quick', E: 'Easy', M: 'Medium', H: 'Hard' };
+const KIND = { concept: 'Study', hld: 'HLD', lld: 'LLD', task: 'Task' };
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const get = id => st.items[id] || {};
+const ensure = id => st.items[id] || (st.items[id] = {});
+function todayStr() { const t = fd(new Date()); return t < START ? START : t; }
+let TODAY = todayStr(), sel = TODAY, view = 'today', plan = null;
+/* Lesson page se wapas aaye toh jo din khula tha wahi (same tab navigation) */
+const SEL_KEY = 'switch-prep-sel';
+// lesson link click → us waqt ka din yaad (3 ghante tak valid, taaki agle din fresh "aaj" khule)
+function savedSel() {
+  try { const o = JSON.parse(sessionStorage.getItem(SEL_KEY) || 'null'); if (o && /^\d{4}-\d{2}-\d{2}$/.test(o.d) && Date.now() - o.t < 3 * 3600e3) return o.d; } catch (e) {}
+  return null;
+}
+document.addEventListener('click', e => { const a = e.target.closest('a[href^="learn.html"]'); if (a) { try { sessionStorage.setItem(SEL_KEY, JSON.stringify({ d: sel, t: Date.now() })); } catch (err) {} } });
+const closed = new Set(), opened = new Set();
+let backupMsg = '', restoreArmed = false;
+
+const valid = d => d && typeof d === 'object' && d.items && typeof d.items === 'object';
+function adopt(d) { st = d; if (st.cfg) applyConfig(st.cfg); }
+function loadLocal() { try { const j = localStorage.getItem(LS_KEY); if (j) { const d = JSON.parse(j); if (valid(d)) adopt(d); } } catch (e) { lsOK = false; } }
+function saveLocal() { try { localStorage.setItem(LS_KEY, JSON.stringify(st)); lsOK = true; } catch (e) { lsOK = false; } }
+function lastFileSave() { try { return Number(localStorage.getItem(LS_SAVED)) || 0; } catch (e) { return 0; } }
+function markFileSave() { try { localStorage.setItem(LS_SAVED, String(Date.now())); } catch (e) {} }
+const stamp = ms => ms ? new Date(ms).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }) : 'never';
+const doneCount = d => Object.values(d.items || {}).filter(e => e && e.s === 'd').length;
+
+const PROG = 'switch-prep-progress.json';
+const PAGE = (() => { try { return decodeURIComponent(location.pathname.split('/').pop() || ''); } catch (e) { return ''; } })();
+let dirHandle = null, folderName = '', moved = false, pendingDir = null;
+
+function setSync() {
+  const el = document.getElementById('sync');
+  let s, txt;
+  if (fileHandle && !fileNeedsPermission) {
+    if (fileErr) { s = 'error'; txt = 'Could not save to folder ' + folderName; }
+    else if (fileWriting || fileDirty) { s = 'saving'; txt = 'Saving…'; }
+    else { s = 'saved'; txt = 'Saved in folder ' + folderName; }
+  } else if (dirHandle && fileNeedsPermission) { s = 'slow'; txt = 'Reconnect folder ' + folderName; }
+  else if (moved) { s = 'slow'; txt = 'Planner moved: choose its folder'; }
+  else if (lsOK) { s = FS_OK ? 'slow' : 'saved'; txt = FS_OK ? 'Saved in this browser only' : 'Saved in this browser'; }
+  else { s = 'error'; txt = 'Browser storage blocked: save a file'; }
+  el.dataset.s = s; el.querySelector('span').textContent = txt;
+}
+function persist() {
+  st.updated = Date.now();
+  saveLocal();
+  if (fileHandle && !fileNeedsPermission) { fileDirty = true; clearTimeout(fileTimer); fileTimer = setTimeout(writeFile, 500); }
+  setSync();
+}
+async function writeFile() {
+  if (fileWriting || !fileDirty || !fileHandle || fileNeedsPermission) return;
+  fileWriting = true; fileDirty = false; setSync();
+  try {
+    const w = await fileHandle.createWritable();
+    await w.write(JSON.stringify(st, null, 1));
+    await w.close();
+    fileErr = false; markFileSave();
+  } catch (e) { fileErr = true; }
+  fileWriting = false;
+  if (fileDirty) writeFile(); else setSync();
+}
+
+/* The planner's folder is remembered between visits (the browser keeps the folder handle in IndexedDB). */
+function idb() { return new Promise((res, rej) => { const r = indexedDB.open('switch-prep', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }); }
+async function idbSet(k, v) {
+  try { const db = await idb(); await new Promise((res, rej) => { const tx = db.transaction('kv', 'readwrite'); const os = tx.objectStore('kv'); if (v == null) os.delete(k); else os.put(v, k); tx.oncomplete = res; tx.onerror = () => rej(tx.error); }); } catch (e) {}
+}
+async function idbGet(k) {
+  try { const db = await idb(); return await new Promise(res => { const q = db.transaction('kv').objectStore('kv').get(k); q.onsuccess = () => res(q.result || null); q.onerror = () => res(null); }); } catch (e) { return null; }
+}
+async function readHandle(h) { const f = await h.getFile(); const txt = await f.text(); if (!txt.trim()) return null; return JSON.parse(txt); }
+/* True when the chosen folder holds this planner's own .html file. */
+async function pageInDir(dir) {
+  if (!PAGE || !/\.html?$/i.test(PAGE)) return true;
+  try { await dir.getFileHandle(PAGE); return true; } catch (e) { return false; }
+}
+async function attach(dir) {
+  dirHandle = dir; folderName = dir.name; moved = false; fileNeedsPermission = false; fileErr = false;
+  fileHandle = await dir.getFileHandle(PROG, { create: true });
+  await idbSet('dir', dir);
+}
+async function syncFromLinked() {
+  let d = null;
+  try { d = await readHandle(fileHandle); } catch (e) { d = null; }
+  if (valid(d) && (d.updated || 0) > (st.updated || 0)) { if (!d.cfg && st.cfg) d.cfg = st.cfg; adopt(d); saveLocal(); route(); }
+  else if (!valid(d) || (d.updated || 0) < (st.updated || 0)) { fileDirty = true; writeFile(); }
+  setSync();
+}
+async function resume() {
+  if (!(await pageInDir(dirHandle))) {
+    moved = true; fileHandle = null; dirHandle = null; await idbSet('dir', null); setSync(); render(); return;
+  }
+  await attach(dirHandle); await syncFromLinked(); render();
+}
+async function restoreLinked() {
+  if (!FS_OK) return;
+  const dir = await idbGet('dir');
+  if (!dir) { setSync(); return; }
+  dirHandle = dir; folderName = dir.name;
+  let perm = 'prompt';
+  try { perm = await dir.queryPermission({ mode: 'readwrite' }); } catch (e) {}
+  if (perm === 'granted') await resume();
+  else { fileNeedsPermission = true; setSync(); render(); }
+}
+async function reconnect() {
+  try {
+    const perm = await dirHandle.requestPermission({ mode: 'readwrite' });
+    if (perm === 'granted') { fileNeedsPermission = false; await resume(); }
+  } catch (e) { backupMsg = 'The folder could not be reopened. Choose it again.'; await unlink(); }
+}
+async function chooseFolder() {
+  let dir;
+  try { dir = await window.showDirectoryPicker({ id: 'switch-prep', mode: 'readwrite' }); }
+  catch (e) { if (e && e.name !== 'AbortError') { backupMsg = 'Could not open that folder.'; render(); } return; }
+  if (!(await pageInDir(dir))) { pendingDir = dir; render(); return; }
+  await useFolder(dir);
+}
+async function useFolder(dir) {
+  pendingDir = null;
+  let d = null, missing = false;
+  try { d = await readHandle(await dir.getFileHandle(PROG)); } catch (e) { if (e && e.name === 'NotFoundError') missing = true; else if (e instanceof SyntaxError) d = undefined; else missing = true; }
+  if (d === undefined || (d !== null && !valid(d))) { backupMsg = `${PROG} in that folder is damaged, so nothing was loaded or saved there.`; render(); return; }
+  if (valid(d) && d.updated !== st.updated) { offerImport(d, 'the progress file in folder ' + dir.name, dir); return; }
+  await attach(dir);
+  if (valid(d)) { adopt(d); saveLocal(); }
+  else { fileDirty = true; await writeFile(); }
+  backupMsg = 'Progress now saves in folder ' + dir.name + '.';
+  if (missing && st.cfg) backupMsg += ' Created ' + PROG + ' there.';
+  route();
+}
+async function unlink() { fileHandle = null; dirHandle = null; folderName = ''; fileNeedsPermission = false; fileErr = false; await idbSet('dir', null); setSync(); render(); }
+function folderNotice() {
+  if (!pendingDir) return '';
+  return `<div class="lock" style="margin-top:10px"><p style="margin:0 0 8px">Folder <b>${esc(pendingDir.name)}</b> does not contain <b>${esc(PAGE)}</b>. Choose the folder this planner file is in, so the progress stays next to it.</p>
+    <div class="row"><button class="btn" type="button" data-act="link">Choose again</button><button class="txt" type="button" data-act="usepending">Save there anyway</button></div></div>`;
+}
+
+function offerImport(d, source, handle) {
+  if (!Object.keys(st.items).length && !st.cfg) { applyImport(d, handle); return; }
+  pendingImport = { d, source, handle: handle || null };
+  restoreArmed = false; backupMsg = '';
+  if (view !== 'progress' && st.cfg) location.hash = 'progress'; else render();
+}
+async function applyImport(d, handle) {
+  if (!d.cfg && st.cfg) d.cfg = st.cfg;
+  adopt(d); pendingImport = null; backupMsg = 'Progress loaded.';
+  if (handle) await attach(handle);
+  persist();
+  if (st.cfg && location.hash !== '#progress') location.hash = 'today'; else route();
+}
+async function keepMine() {
+  const h = pendingImport && pendingImport.handle; pendingImport = null;
+  if (h) { await attach(h); fileDirty = true; await writeFile(); }
+  render();
+}
+function downloadFile() {
+  try {
+    const blob = new Blob([JSON.stringify(st, null, 1)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = PROG;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+    markFileSave(); backupMsg = FS_OK ? 'Downloaded.' : 'Downloaded. Move it into this planner\'s folder so the two stay together.';
+  } catch (e) { backupMsg = 'This browser blocked the download. Use Copy backup text instead.'; }
+  render();
+}
+function importFromInput(input) {
+  const f = input.files && input.files[0]; if (!f) return;
+  f.text().then(txt => {
+    let d = null; try { d = JSON.parse(txt); } catch (e) {}
+    input.value = '';
+    if (!valid(d)) { backupMsg = 'That file is not a Switch Prep progress file.'; render(); return; }
+    offerImport(d, 'the file ' + f.name, null);
+  });
+}
+window.addEventListener('storage', ev => {
+  if (ev.key !== LS_KEY || !ev.newValue) return;
+  try { const d = JSON.parse(ev.newValue); if (valid(d)) { adopt(d); route(); } } catch (e) {}
+});
+
+/* ===== Actions ===== */
+function setStatus(id, v) {
+  const it = BY_ID[id], e = ensure(id);
+  if (v === 'd') {
+    if (e.s !== 'd') { e.s = 'd'; e.done = TODAY; if (revisable(it)) { e.stage = 0; e.due = addDays(TODAY, 1); } }
+  } else {
+    if (v === 's') e.s = 's'; else delete e.s;
+    delete e.done; delete e.due; delete e.stage;
+  }
+  persist(); render();
+}
+function rate(id, r) {
+  const e = ensure(id);
+  const n = nextReview(e, r, TODAY);
+  (e.h || (e.h = [])).push([TODAY, r, e.stage || 0, e.due]);
+  e.stage = n.stage; e.due = n.due;
+  persist(); render();
+}
+function undoRate(id) {
+  const e = ensure(id); const last = e.h && e.h[e.h.length - 1];
+  if (!last || last[0] !== TODAY) return;
+  e.h.pop(); e.stage = last[2]; e.due = last[3];
+  persist(); render();
+}
+function pullNext() {
+  const days = Object.keys(plan.days).filter(d => d > TODAY).sort();
+  for (const d of days) { const id = plan.days[d].dsa[0]; if (id) { ensure(id).s = 's'; persist(); render(); return; } }
+}
+
+/* ===== Derived data ===== */
+function recompute() { TODAY = todayStr(); plan = schedule(st, TODAY); }
+const lastRev = id => { const h = get(id).h; return h && h.length ? h[h.length - 1] : null; };
+function revisionsToday() {
+  const due = ITEMS.filter(it => { const e = get(it.id); return e.s === 'd' && e.due && e.due <= TODAY; })
+    .sort((a, b) => get(a.id).due.localeCompare(get(b.id).due) || TIER_RANK[a.tier] - TIER_RANK[b.tier]);
+  const done = ITEMS.filter(it => { const l = lastRev(it.id); return l && l[0] === TODAY; });
+  const hasNew = ((plan.days[TODAY] && plan.days[TODAY].dsa.length) || 0) > 0;
+  const cap = hasNew ? 4 : 8;
+  const room = Math.max(0, cap - done.length);
+  return { due: due.slice(0, room), extra: Math.max(0, due.length - room), done, cap };
+}
+function tierStats(tiers) {
+  const list = ITEMS.filter(i => tiers.includes(i.tier) && !i.bonus);
+  const tot = list.reduce((a, i) => a + mins(i), 0);
+  const dn = list.filter(i => get(i.id).s === 'd').reduce((a, i) => a + mins(i), 0);
+  let proj = null, missing = false;
+  for (const t of tiers) { const f = plan.finish[t]; if (!f) missing = true; else if (!proj || f > proj) proj = f; }
+  return { pct: tot ? Math.round(dn / tot * 100) : 0, proj: missing ? null : proj, allDone: list.every(i => get(i.id).s === 'd') };
+}
+const fmt = (s, o) => pd(s).toLocaleDateString('en-IN', o || { day: 'numeric', month: 'short' });
+function paceLine(stats, target) {
+  if (stats.allDone) return '<div class="pace ok">Complete</div>';
+  if (!stats.proj) return '<div class="pace late">Not yet scheduled</div>';
+  const late = dayDiff(target, stats.proj);
+  if (late <= 0) return `<div class="pace ok">On track · est. ${fmt(stats.proj)}</div>`;
+  return `<div class="pace late">${late} day${late > 1 ? 's' : ''} behind · est. ${fmt(stats.proj)}</div>`;
+}
+function meter(label, stats, target) {
+  return `<div class="meter"><div class="lbl">${label}</div>
+    <div class="val"><b class="mono">${stats.pct}%</b><span>by ${fmt(target)}</span></div>
+    <div class="bar"><i style="width:${stats.pct}%"></i></div>${paceLine(stats, target)}</div>`;
+}
+
+function meters() {
+  return `<div class="ready${FAANG_ON ? '' : ' one'}">${meter('Target companies', tierStats([1, 2, 'C']), TARGET)}${FAANG_ON ? meter('FAANG level', tierStats([3]), END) : ''}</div>`;
+}
+
+/* ===== Card builders ===== */
+const hasLesson = it => !!(window.PLAN_MANIFEST && window.PLAN_MANIFEST.files[it.id]);
+const learnLink = (it, cls) => hasLesson(it) ? `<a class="${cls || 'learn'}" href="learn.html#${esc(it.id)}" title="Lesson kholo">📖 Learn</a>` : '';
+// DSA lesson ka visualizer seedha (learn.html#id/viz → lesson khul ke visualizer pe scroll)
+const vizLink = it => hasLesson(it) && it.track === 'dsa' ? `<a class="learn" href="learn.html#${esc(it.id)}/viz" title="Seedha visualizer">▶ Visualize</a>` : '';
+const noteP = it => { const n = get(it.id).note; return n ? `<p class="savednote">${esc(n)}</p>` : ''; };
+function solveLinks(it) {
+  const parts = [];
+  if (hasLesson(it)) parts.push(learnLink(it));
+  if (vizLink(it)) parts.push(vizLink(it));
+  if (it.track === 'dsa') {
+    parts.push(it.url ? `<a href="${esc(it.url)}" target="_blank" rel="noopener">Open problem ↗</a>` : `<span class="hint">Solve in your IDE</span>`);
+    const v = it.video || 'https://www.youtube.com/results?search_query=' + encodeURIComponent(it.title + ' leetcode solution');
+    parts.push(`<a href="${esc(v)}" target="_blank" rel="noopener">${it.video ? 'Solution video ↗' : 'Find a video ↗'}</a>`);
+  } else {
+    const q = it.read || 'https://www.google.com/search?q=' + encodeURIComponent(it.title + (it.topic === 'System Design' ? ' system design' : it.topic === 'LLD' ? ' low level design java' : ' interview questions baeldung'));
+    parts.push(`<a href="${esc(q)}" target="_blank" rel="noopener">${esc(it.readLabel || 'Read up ↗')}</a>`);
+  }
+  return `<div class="links">${parts.join('')}</div>`;
+}
+function tagsFor(it, extra) {
+  const t = [`<span class="tag">${esc(it.topic)}</span>`];
+  if (it.track === 'dsa') t.push(`<span class="tag d-${it.diff}">${DIFF[it.diff]}</span>`);
+  else t.push(`<span class="tag">${KIND[it.kind]}</span>`);
+  t.push(`<span class="mono">~${mins(it)} min</span>`);
+  if (it.bonus) t.push('<span class="tag bonus">Bonus</span>');
+  return `<div class="tags">${extra || ''}${t.join('')}</div>`;
+}
+function titleH(it) {
+  return it.url ? `<h3><a href="${esc(it.url)}" target="_blank" rel="noopener">${esc(it.title)}</a></h3>` : `<h3><span>${esc(it.title)}</span></h3>`;
+}
+function noteBox(it) {
+  const e = get(it.id), key = 'n:' + it.id;
+  const open = opened.has(key) || (e.note && !closed.has(key));
+  return `<details class="note" data-key="${key}"${open ? ' open' : ''}><summary>${e.note ? 'Your note' : 'Add a note'}</summary>
+    <textarea id="note-${it.id}" data-note="${it.id}" placeholder="Key insight in one line, e.g. shrink the window when zeros exceed k">${esc(e.note || '')}</textarea></details>`;
+}
+function qsBox(it, defOpen) {
+  if (!it.qs) return '';
+  const key = 'q:' + it.id;
+  const open = defOpen ? !closed.has(key) : opened.has(key);
+  return `<details class="qs" data-key="${key}"${open ? ' open' : ''}><summary>Interview questions (${it.qs.length})</summary><ol>${it.qs.map(q => `<li>${esc(q)}</li>`).join('')}</ol></details>`;
+}
+function newCard(it) {
+  const s = get(it.id).s || 'p';
+  const seg = ['p', 's', 'd'].map(v => `<button type="button" data-act="status" data-id="${it.id}" data-v="${v}" aria-pressed="${s === v}">${{ p: 'Pending', s: 'Studying', d: 'Done' }[v]}</button>`).join('');
+  return `<article class="card${s === 'd' ? ' is-done' : ''}">${tagsFor(it)}${titleH(it)}${solveLinks(it)}
+    <div class="seg" role="group" aria-label="Status">${seg}</div>
+    ${it.track === 'th' ? qsBox(it, s !== 'd') : ''}${noteBox(it)}</article>`;
+}
+function revCard(it, done) {
+  const e = get(it.id);
+  if (done) {
+    const l = lastRev(it.id);
+    return `<article class="card rev is-done">${tagsFor(it, '<span class="tag revt">Reviewed</span>')}${titleH(it)}
+      <div class="row"><span class="msg">Rated ${esc(l[1] === 'ok' ? 'OK' : l[1][0].toUpperCase() + l[1].slice(1))} · next review ${fmt(e.due)}</span>
+      <button class="txt" type="button" data-act="undo" data-id="${it.id}">Undo</button></div>${solveLinks(it)}</article>`;
+  }
+  const n = (e.h ? e.h.length : 0) + 1;
+  const over = dayDiff(e.due, TODAY);
+  const label = `Review ${n}` + (over > 0 ? ` · ${over}d overdue` : '');
+  const how = it.track === 'dsa' ? 'Recall the approach in 2 minutes, then code only the tricky part.' : 'Answer each question aloud in under a minute.';
+  const btn = r => `<button type="button" data-act="rate" data-id="${it.id}" data-r="${r}">${{ hard: 'Hard', ok: 'OK', easy: 'Easy' }[r]}<small>+${previewInterval(e, r)}d</small></button>`;
+  return `<article class="card rev">${tagsFor(it, `<span class="tag revt">${label}</span>`)}${titleH(it)}
+    ${e.note ? `<p class="savednote">${esc(e.note)}</p>` : ''}
+    <p class="msg" style="margin:0 0 8px">${how}</p>${solveLinks(it)}
+    <div class="rate" role="group" aria-label="How did it go?">${btn('hard')}${btn('ok')}${btn('easy')}</div>
+    ${it.track === 'th' ? qsBox(it, false) : ''}</article>`;
+}
+function block(title, meta, inner) {
+  return `<section class="blk"><div class="blk-h"><h2>${title}</h2><span class="meta">${meta || ''}</span></div><div class="list">${inner}</div></section>`;
+}
+
+/* ===== Views ===== */
+function itemsForDay(day) {
+  if (day < TODAY) {
+    return {
+      dsa: ITEMS.filter(i => i.track === 'dsa' && get(i.id).done === day),
+      th: ITEMS.filter(i => i.track === 'th' && get(i.id).done === day)
+    };
+  }
+  const p = plan.days[day] || { dsa: [], th: [] };
+  const pick = tr => {
+    const ids = new Set(p[tr]);
+    if (day === TODAY) ITEMS.forEach(i => { if (i.track === tr && get(i.id).done === TODAY) ids.add(i.id); });
+    return ITEMS.filter(i => ids.has(i.id));
+  };
+  return { dsa: pick('dsa'), th: pick('th') };
+}
+function reviewedOn(day) { return ITEMS.filter(i => (get(i.id).h || []).some(h => h[0] === day)); }
+
+/* Us din ke saare items ek page pe (learn.html Day page). ids = us din ka schedule — din chhoota toh schedule aage shift hota hai, link bhi. */
+function dayLessonLink(day, items, revs) {
+  if (!items.length && !revs.length) return '';
+  const n = dayDiff(START, day) + 1;
+  const ready = items.concat(revs).filter(hasLesson).length;
+  const href = 'learn.html#day/' + day + '/' + n + '/' + items.map(i => i.id).join(',') + '/' + revs.map(i => i.id).join(',');
+  return `<div class="daylesson"><a href="${esc(href)}" data-selday="${day}">📖 Day ${n} ka poora lesson</a><span>${items.length} item${items.length === 1 ? '' : 's'}${revs.length ? ' + ' + revs.length + ' revision' : ''} · ${ready} lesson ready · ek page pe</span></div>`;
+}
+function viewToday() {
+  const d = itemsForDay(sel);
+  let html = '';
+  if (sel === TODAY) {
+    html += meters();
+    const all = d.dsa.concat(d.th);
+    const r = revisionsToday();
+    const doneN = all.filter(i => get(i.id).s === 'd').length + r.done.length;
+    const totN = all.length + r.done.length + r.due.length;
+    const minsLeft = all.filter(i => get(i.id).s !== 'd').reduce((a, i) => a + mins(i), 0) + r.due.length * 8;
+    if (dirHandle && fileNeedsPermission) html += `<div class="lock" style="margin-top:14px"><div class="row"><span>Saving to folder <b>${esc(folderName)}</b> is paused. Your browser asks again after it restarts.</span><button class="btn" type="button" data-act="reconnect">Reconnect folder</button></div></div>`;
+    else if (moved) html += `<div class="lock" style="margin-top:14px"><div class="row"><span>This planner was moved, so it stopped saving to its old folder.</span><button class="btn" type="button" data-act="link">Choose its folder</button></div></div>`;
+    else if (FS_OK && !fileHandle) html += `<div class="lock" style="margin-top:14px"><div class="row"><span>Keep your progress next to this planner: choose its folder once and every change is saved there.</span><button class="btn" type="button" data-act="link">Choose this planner's folder</button></div></div>${folderNotice()}`;
+    else if (!FS_OK && Object.keys(st.items).length && Date.now() - lastFileSave() > 3 * 864e5) html += `<div class="lock" style="margin-top:14px"><div class="row"><span>Your progress is only in this browser. Download it into this planner's folder now and then.</span><button class="btn ghost" type="button" data-act="download">Download progress file</button></div></div>`;
+    html += dayLessonLink(sel, all, r.due.concat(r.done));
+    html += `<div class="daysum"><span><b class="mono">${doneN}/${totN}</b> done today</span><span>about <b class="mono">${Math.round(minsLeft / 6) / 10} h</b> left</span></div>`;
+    const dsaHtml = d.dsa.length ? d.dsa.map(newCard).join('') : `<p class="empty">${plan.unlocked || TODAY >= FAANG_START ? 'No new problems today. Use the time for revisions.' : 'No new problems today. This is a revision and buffer day.'}</p>`;
+    html += block('New problems', d.dsa.length ? `~${d.dsa.reduce((a, i) => a + mins(i), 0)} min` : '', dsaHtml + `<div class="pull"><button class="txt" type="button" data-act="pull">+ Pull in the next problem</button></div>`);
+    const revHtml = r.due.map(i => revCard(i, false)).join('') + r.done.map(i => revCard(i, true)).join('');
+    html += block('Revisions due', `up to ${r.cap} a day`, (revHtml || '<p class="empty">Nothing due. Problems you finish come back here after 1, 3, 7 and 16 days.</p>') + (r.extra ? `<p class="more">${r.extra} more waiting. They roll to the next days, oldest first.</p>` : ''));
+    html += block('Java, Spring & design', d.th.length ? `~${d.th.reduce((a, i) => a + mins(i), 0)} min` : '', d.th.length ? d.th.map(newCard).join('') : '<p class="empty">Nothing new here today.</p>');
+  } else if (sel < TODAY) {
+    const rv = reviewedOn(sel);
+    const all = d.dsa.concat(d.th);
+    html += dayLessonLink(sel, all, rv);
+    html += `<div class="daysum"><span><b class="mono">${all.length}</b> finished</span><span><b class="mono">${rv.length}</b> reviewed</span></div>`;
+    html += block('Finished this day', '', all.length ? all.map(newCard).join('') : '<p class="empty">Nothing was marked done on this day.</p>');
+    if (rv.length) html += block('Reviewed this day', '', rv.map(i => { const h = (get(i.id).h || []).filter(x => x[0] === sel).pop(); return `<article class="card rev is-done">${tagsFor(i, `<span class="tag revt">Rated ${h[1] === 'ok' ? 'OK' : h[1][0].toUpperCase() + h[1].slice(1)}</span>`)}${titleH(i)}${noteP(i)}${solveLinks(i)}</article>`; }).join(''));
+  } else {
+    const fc = ITEMS.filter(i => { const e = get(i.id); return e.s === 'd' && e.due === sel; });
+    html += dayLessonLink(sel, d.dsa.concat(d.th), fc);
+    html += `<div class="daysum"><span>Planned from your current pace. It shifts if you go faster or slower.</span></div>`;
+    html += block('New problems', '', d.dsa.length ? d.dsa.map(newCard).join('') : '<p class="empty">No new problems planned. Revision and buffer day.</p>');
+    html += block('Revisions expected', '', fc.length ? fc.map(i => `<article class="card rev">${tagsFor(i, '<span class="tag revt">Review</span>')}${titleH(i)}${noteP(i)}${solveLinks(i)}</article>`).join('') : '<p class="empty">None scheduled yet.</p>');
+    html += block('Java, Spring & design', '', d.th.length ? d.th.map(newCard).join('') : '<p class="empty">Nothing new planned.</p>');
+  }
+  return html;
+}
+
+function weekStart(day) { const w = dow(day); return addDays(day, -((w + 6) % 7)); }
+function viewWeek() {
+  const ws = weekStart(sel);
+  let out = '<div class="list" style="margin-top:16px">';
+  for (let k = 0; k < 7; k++) {
+    const day = addDays(ws, k);
+    const d = itemsForDay(day);
+    const rows = d.dsa.concat(d.th).map(i => `<li><span class="dot ${get(i.id).s || ''}"></span><span class="kind">${i.track === 'dsa' ? DIFF[i.diff] : KIND[i.kind]}</span><span class="t">${esc(i.title)}</span></li>`).join('');
+    let revN = 0;
+    if (day === TODAY) { const r = revisionsToday(); revN = r.due.length + r.done.length; }
+    else if (day < TODAY) revN = reviewedOn(day).length;
+    else revN = ITEMS.filter(i => get(i.id).due === day && get(i.id).s === 'd').length;
+    const inRange = day >= START;
+    out += `<div class="day${day === TODAY ? ' today' : ''}"><div class="day-h"><button type="button" data-act="open" data-day="${day}">${fmt(day, { weekday: 'short', day: 'numeric', month: 'short' })}${day === TODAY ? ' · Today' : ''}</button>
+      <span class="msg">${revN ? revN + (day < TODAY ? ' reviewed' : ' reviews') : ''}</span></div>
+      ${rows ? `<ul>${rows}</ul>` : `<p class="msg" style="margin:6px 0 0">${!inRange ? 'Before the plan starts.' : day < TODAY ? 'Nothing logged.' : 'Revision / buffer day.'}</p>`}</div>`;
+  }
+  return out + '</div>';
+}
+
+function viewRoadmap() {
+  let out = '<div style="margin-top:16px">';
+  for (const t of TIER_ORDER) {
+    const T = TIERS[t];
+    const stats = tierStats([t]);
+    const list = ITEMS.filter(i => i.tier === t);
+    const row = i => {
+      const e = get(i.id);
+      const when = e.s === 'd' ? 'done ' + fmt(e.done) : plan.at[i.id] ? fmt(plan.at[i.id]) : i.bonus ? '' : '';
+      const start = i.bonus && !e.s ? `<button class="start" type="button" data-act="status" data-id="${i.id}" data-v="s">Start</button>` : `<span class="when mono">${when}</span>`;
+      const name = i.url ? `<a href="${esc(i.url)}" target="_blank" rel="noopener">${esc(i.title)}${i.bonus ? ' · bonus' : ''}</a>` : `<span class="t">${esc(i.title)}</span>`;
+      return `<li><span class="dot ${e.s || ''}"></span>${name}${hasLesson(i) ? `<a class="learn" href="learn.html#${esc(i.id)}" title="Lesson kholo">📖</a>` : ''}${start}</li>`;
+    };
+    const groups = {};
+    list.filter(i => i.track === 'dsa').forEach(i => (groups[i.topic] = groups[i.topic] || []).push(i));
+    const dsaHtml = Object.keys(groups).map(g => `<div class="grp"><h4>${esc(g)}</h4><ul class="rm">${groups[g].map(row).join('')}</ul></div>`).join('');
+    const thList = list.filter(i => i.track === 'th');
+    const nD = list.filter(i => i.track === 'dsa').length, nT = thList.length;
+    const lockNote = t === 3 && !plan.unlocked ? `<div class="lock">Hidden from your daily list until ${fmt(FAANG_START)}. Finish Tiers 1 and 2 early and it unlocks sooner.</div>` : '';
+    const key = 'rm:' + t, open = opened.has(key);
+    out += `<div class="tier"><div class="tier-h"><h2>${T.name}</h2><span class="msg mono">${t === 'C' ? fmt(CONSOL_START) + ' – ' + fmt(TARGET) : 'target ' + fmt(T.target)}</span></div>
+      <p class="blurb">${T.blurb}</p>
+      <div class="bar"><i style="width:${stats.pct}%"></i></div>${paceLine(stats, T.target)}${lockNote}
+      <details data-key="${key}"${open ? ' open' : ''}><summary>${nD ? nD + ' problems · ' : ''}${nT} study items</summary>
+      ${dsaHtml}${nT ? `<div class="grp"><h4>Java, Spring &amp; design</h4><ul class="rm">${thList.map(row).join('')}</ul></div>` : ''}</details></div>`;
+  }
+  return out + '</div>';
+}
+
+function streak() {
+  const act = new Set();
+  for (const id in st.items) { const e = st.items[id]; if (e.done) act.add(e.done); (e.h || []).forEach(h => act.add(h[0])); }
+  let d = act.has(TODAY) ? TODAY : addDays(TODAY, -1), n = 0;
+  while (act.has(d)) { n++; d = addDays(d, -1); }
+  return n;
+}
+function viewProgress() {
+  const probs = ITEMS.filter(i => i.track === 'dsa' && !i.bonus);
+  const solved = probs.filter(i => get(i.id).s === 'd').length;
+  const th = ITEMS.filter(i => i.track === 'th');
+  const thDone = th.filter(i => get(i.id).s === 'd').length;
+  const reviews = Object.values(st.items).reduce((a, e) => a + (e.h ? e.h.length : 0), 0);
+  let out = meters();
+  out += `<section class="blk"><div class="grid2">
+    <div class="stat"><b class="mono">${solved}/${probs.length}</b><span>problems solved</span></div>
+    <div class="stat"><b class="mono">${thDone}/${th.length}</b><span>Java, Spring &amp; design items</span></div>
+    <div class="stat"><b class="mono">${reviews}</b><span>reviews done</span></div>
+    <div class="stat"><b class="mono">${streak()}</b><span>day streak</span></div></div></section>`;
+  const topics = [];
+  probs.forEach(i => { if (!topics.includes(i.topic)) topics.push(i.topic); });
+  out += block('Problems by topic', '', `<div class="panel topics">${topics.map(tp => {
+    const l = probs.filter(i => i.topic === tp), dn = l.filter(i => get(i.id).s === 'd').length;
+    return `<div class="topic"><span>${esc(tp)}</span><div class="bar"><i style="width:${Math.round(dn / l.length * 100)}%"></i></div><span class="n mono">${dn}/${l.length}</span></div>`;
+  }).join('')}</div>`);
+  const hard = ITEMS.filter(i => { const l = lastRev(i.id); return l && l[1] === 'hard'; });
+  out += block('Rated Hard', hard.length ? hard.length + ' to re-solve' : '', hard.length ? `<div class="panel"><ul class="rm">${hard.map(i => `<li><span class="dot d"></span>${i.url ? `<a href="${esc(i.url)}" target="_blank" rel="noopener">${esc(i.title)}</a>` : `<span class="t">${esc(i.title)}</span>`}<span class="when mono">next ${fmt(get(i.id).due)}</span></li>`).join('')}</ul></div>` : '<p class="empty">Problems you rate Hard during review collect here for the re-solve day on ' + fmt(CONSOL_START) + '.</p>');
+  out += block('How the plan adapts', '', `<div class="panel"><ul>
+    <li>New work is a queue, not fixed dates. Miss a day and it simply starts again tomorrow; the estimates above move to show it.</li>
+    <li>Finished items come back for review after 1, 3, 7 and 16 days. Hard resets to 1 day, Easy skips ahead.</li>
+    <li>At most 4 reviews a day (8 on days with no new problems), oldest first, so a missed week never becomes a wall.</li>
+    <li>Weekdays alternate two problems (Mon, Wed, Fri) and one (Tue, Thu). Saturdays carry a system design problem, Sundays an LLD problem.</li>
+    <li>Bonus problems in the Roadmap are never auto-scheduled. Press Start on one when you are ahead.</li></ul></div>`);
+  const linkPart = fileHandle && !fileNeedsPermission
+    ? `<p>Every change is saved to <b>${esc(PROG)}</b> in folder <b>${esc(folderName)}</b>, next to this planner. To move to another computer, copy the whole folder and choose it there.</p>
+       <div class="row"><button class="txt" type="button" data-act="unlink">Stop saving to this folder</button></div>`
+    : dirHandle && fileNeedsPermission
+      ? `<p>Saving to folder <b>${esc(folderName)}</b> is paused until you allow it again.</p><div class="row"><button class="btn" type="button" data-act="reconnect">Reconnect folder</button><button class="txt" type="button" data-act="unlink">Stop using it</button></div>`
+      : FS_OK
+        ? `<p>${moved ? 'This planner was moved, so it stopped saving to its old folder. ' : ''}Choose the folder this planner file is in. Every change is then saved there as <b>${esc(PROG)}</b>, so the folder carries your progress.</p>
+           <div class="row"><button class="btn" type="button" data-act="link">Choose this planner's folder</button></div>${folderNotice()}`
+        : `<p class="msg">This browser cannot save into a folder automatically (Chrome and Edge on a computer can). Download the progress file now and then and keep it in this planner's folder.</p>`;
+  const imp = pendingImport ? importBox() : '';
+  const c = st.cfg || {};
+  out += block('Your plan', '', `<div class="panel">
+    <p>Start ${esc(fmt(START, { day: 'numeric', month: 'short', year: 'numeric' }))} · ready for target companies by <b>${esc(fmt(TARGET, { day: 'numeric', month: 'short', year: 'numeric' }))}</b>${FAANG_ON ? ` · FAANG level by <b>${esc(fmt(END, { day: 'numeric', month: 'short', year: 'numeric' }))}</b>` : ''}.</p>
+    <p>${esc(c.hWd)} h a day on weekdays, ${esc(c.hWe)} h on weekends.</p>
+    <a class="btn ghost" href="#setup" style="display:inline-block;text-decoration:none">Change dates or hours</a>
+    <p class="msg" style="margin-top:8px">Your finished problems and notes stay. Only the upcoming days are re-planned.</p></div>`);
+  out += block('Save your progress', '', `<div class="panel">
+    <p>Progress is also kept in this browser${lsOK ? '' : ' <b>(blocked here, so save a file)</b>'}, but clearing browser data erases that copy.</p>
+    ${linkPart}
+    <div class="row" style="margin-top:12px"><button class="btn ghost" type="button" data-act="download">Download progress file</button>
+      <label class="btn ghost" for="importfile">Load progress file</label><input type="file" id="importfile" accept=".json,application/json" hidden></div>
+    <p class="msg" style="margin-top:8px">Last saved to a file: ${esc(stamp(lastFileSave()))}${backupMsg ? ' · ' + esc(backupMsg) : ''}</p>
+    ${imp}
+    <details class="qs" data-key="paste"${opened.has('paste') || restoreArmed ? ' open' : ''}><summary>Move progress as text (to or from the online version)</summary>
+      <p style="margin:8px 0">In the online planner, open Progress and press Copy backup, then paste it here. To go the other way, copy here and paste there.</p>
+      <div class="row"><button class="btn ghost" type="button" data-act="copy">Copy backup text</button><span class="msg" id="bmsg"></span></div>
+      <textarea id="restore" placeholder="Paste backup text here"></textarea>
+      <div class="row"><button class="btn${restoreArmed ? ' warn' : ' ghost'}" type="button" data-act="restore">${restoreArmed ? 'Replace my progress' : 'Load pasted text'}</button>${restoreArmed ? '<button class="txt" type="button" data-act="cancelrestore">Cancel</button><span class="msg">This overwrites everything logged in this browser.</span>' : ''}</div>
+    </details></div>`);
+  out += block('On your phone', '', `<div class="panel"><p>Phones do not run downloaded HTML files reliably. Use the online planner on your phone, and move progress between the two with the backup text above.</p></div>`);
+  return out;
+}
+
+function importBox() {
+  return `<div class="lock" style="margin-top:12px">
+      <p style="margin:0 0 6px"><b>Replace your progress?</b></p>
+      <p style="margin:0 0 4px">In ${esc(pendingImport.source)}: <b class="mono">${doneCount(pendingImport.d)}</b> items done, last changed ${esc(stamp(pendingImport.d.updated))}.</p>
+      <p style="margin:0 0 8px">In this browser: <b class="mono">${doneCount(st)}</b> items done, last changed ${esc(stamp(st.updated))}.</p>
+      <div class="row"><button class="btn warn" type="button" data-act="acceptimport">Use ${pendingImport.handle ? 'the folder\'s progress' : 'the loaded progress'}</button><button class="txt" type="button" data-act="cancelimport">${pendingImport.handle ? "Keep this browser's progress and save it to the folder" : "Keep this browser's progress"}</button></div></div>`;
+}
+
+/* ===== Setup ===== */
+const HOURS = [1, 1.5, 2, 2.5, 3, 3.5, 4, 5, 6];
+function hourOpts(v) { return HOURS.map(h => `<option value="${h}"${h === v ? ' selected' : ''}>${h} h</option>`).join(''); }
+function viewSetup() {
+  const editing = !!st.cfg;
+  const c = st.cfg || defaultConfig(fd(new Date()));
+  return `<div class="setup">
+    ${editing ? '' : `<p class="lead">A day-by-day plan for a Java backend job switch: about 120 DSA problems, Java and Spring Boot, system design and low-level design, with spaced revision so you remember what you solve. Tell it your dates and it lays out every day for you.</p>`}
+    <form id="setupform" class="panel form" novalidate>
+      <label for="cf-name">Your name <span class="opt">optional</span></label>
+      <input id="cf-name" type="text" autocomplete="given-name" maxlength="40" value="${esc(c.name || '')}" placeholder="Shown at the top of your planner">
+      <div class="two">
+        <div><label for="cf-start">Start date</label><input id="cf-start" type="date" value="${c.start}" required></div>
+        <div><label for="cf-target">Ready for target companies by</label><input id="cf-target" type="date" value="${c.target}" required></div>
+      </div>
+      <p class="msg">Target companies means typical mid-level product companies: common DSA, strong Java and Spring, basic system design.</p>
+      <label class="check"><input id="cf-faang" type="checkbox"${c.faang ? ' checked' : ''}> After that, keep going to FAANG-level prep</label>
+      <div id="cf-faangwrap"${c.faang ? '' : ' hidden'}><label for="cf-faangTarget">FAANG-level ready by</label><input id="cf-faangTarget" type="date" value="${c.faangTarget || addDays(c.target, 31)}"></div>
+      <div class="two">
+        <div><label for="cf-hWd">Study time, Monday to Friday</label><select id="cf-hWd">${hourOpts(c.hWd)}</select></div>
+        <div><label for="cf-hWe">Study time, Saturday and Sunday</label><select id="cf-hWe">${hourOpts(c.hWe)}</select></div>
+      </div>
+      <div id="cf-est" class="est" aria-live="polite"></div>
+      <div class="row"><button class="btn" type="submit">${editing ? 'Save changes' : 'Build my plan'}</button>${editing ? '<a class="txt" href="#progress">Cancel</a>' : ''}</div>
+    </form>
+    ${editing ? '' : `<div class="panel" style="margin-top:12px"><p>Already using this planner? ${FS_OK ? "Choose this planner's folder and the progress saved there loads." : `Load ${PROG} from this planner's folder.`}</p>
+      <div class="row">${FS_OK ? '<button class="btn" type="button" data-act="link">Choose this planner\'s folder</button>' : ''}<label class="btn ghost" for="importfile">Load progress file</label></div><input type="file" id="importfile" accept=".json,application/json" hidden>${folderNotice()}${pendingImport ? importBox() : ''}
+      ${backupMsg ? `<p class="msg" style="margin-top:8px">${esc(backupMsg)}</p>` : ''}</div>`}
+    <p class="msg" style="margin-top:12px">Everything you enter stays in this browser on this device. Nothing is sent anywhere.</p>
+  </div>`;
+}
+function readForm() {
+  const v = id => document.getElementById(id);
+  return { name: v('cf-name').value.trim(), start: v('cf-start').value, target: v('cf-target').value, faang: v('cf-faang').checked,
+    faangTarget: v('cf-faangTarget').value, hWd: Number(v('cf-hWd').value), hWe: Number(v('cf-hWe').value) };
+}
+function formError(c) {
+  if (!c.start || !c.target) return 'Pick a start date and a deadline.';
+  if (dayDiff(c.start, c.target) < 14) return 'Leave at least two weeks between the start date and the deadline.';
+  if (c.faang && (!c.faangTarget || dayDiff(c.target, c.faangTarget) < 14)) return 'Leave at least two weeks of FAANG prep after the first deadline.';
+  return '';
+}
+function trial(c) {
+  applyConfig(c);
+  const r = schedule(st, todayStr());
+  const mids = [1, 2, 'C'].map(t => r.finish[t]);
+  return { core: r.finish[1], mid: mids.includes(null) ? null : mids.sort().pop(), faang: c.faang ? r.finish[3] : null };
+}
+function estimateHTML(c) {
+  const err = formError(c);
+  if (err) return `<p class="late">${esc(err)}</p>`;
+  const t = trial(c);
+  const F = s => s ? fmt(s, { day: 'numeric', month: 'short', year: 'numeric' }) : 'well after your dates';
+  const late = t.mid ? dayDiff(c.target, t.mid) : 999;
+  let html = `<p class="est-h">At this pace</p><ul>
+    <li>Core problems and Java basics done by <b>${F(t.core)}</b>. You can start applying then.</li>
+    <li>Ready for target companies by <b>${F(t.mid)}</b> <span class="${late > 0 ? 'late' : 'ok'}">${late > 0 ? `· ${late > 900 ? 'too late' : late + ' days after your deadline'}` : '· on time'}</span></li>`;
+  if (c.faang) {
+    const fl = t.faang ? dayDiff(c.faangTarget, t.faang) : 999;
+    html += `<li>FAANG level by <b>${F(t.faang)}</b> <span class="${fl > 0 ? 'late' : 'ok'}">${fl > 0 ? `· ${fl > 900 ? 'too late' : fl + ' days late'}` : '· on time'}</span></li>`;
+  }
+  html += '</ul>';
+  if (late > 0) {
+    let need = null;
+    for (const h of HOURS) { if (h <= c.hWd) continue; const t2 = trial(Object.assign({}, c, { hWd: h, hWe: Math.max(c.hWe, h) })); if (t2.mid && t2.mid <= c.target) { need = h; break; } }
+    html += `<p class="late">${need ? `To finish on time, try about ${need} h a day, or` : 'Even 6 h a day is not enough here, so'} move the deadline to around ${F(t.mid)}.</p>`;
+  }
+  if (st.cfg) applyConfig(st.cfg);
+  return html;
+}
+let estTimer = null;
+function refreshEstimate() {
+  clearTimeout(estTimer);
+  estTimer = setTimeout(() => {
+    const el = document.getElementById('cf-est'); if (!el) return;
+    const c = readForm();
+    document.getElementById('cf-faangwrap').hidden = !c.faang;
+    el.innerHTML = estimateHTML(c);
+  }, 120);
+}
+function saveSetup() {
+  const c = readForm();
+  const err = formError(c);
+  if (err) { document.getElementById('cf-est').innerHTML = `<p class="late">${esc(err)}</p>`; return; }
+  if (!c.faang) c.faangTarget = c.faangTarget || addDays(c.target, 31);
+  st.cfg = c; applyConfig(c);
+  sel = todayStr();
+  persist();
+  location.hash = 'today';
+  route();
+}
+
+/* ===== Render ===== */
+function headerFor() {
+  const title = document.getElementById('title');
+  let main = '', sub = '';
+  if (view === 'today') {
+    main = fmt(sel, { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+    const n = dayDiff(START, sel) + 1;
+    sub = sel < START ? 'Before the plan starts' : n > PLAN_DAYS ? 'After the plan window' : `Day ${n} of ${PLAN_DAYS} · ${TIERS[tierOf(sel)].name}`;
+  } else if (view === 'week') {
+    const ws = weekStart(sel);
+    main = `${fmt(ws)} – ${fmt(addDays(ws, 6))}`; sub = 'Week view · tap a day to open it';
+  } else if (view === 'roadmap') { main = 'Roadmap'; sub = fmt(START, { day: 'numeric', month: 'short', year: 'numeric' }) + ' – ' + fmt(END, { day: 'numeric', month: 'short', year: 'numeric' }); }
+  else if (view === 'setup') { main = st.cfg ? 'Plan settings' : 'Set up your plan'; sub = st.cfg ? 'Change your dates or study time' : 'Takes under a minute'; }
+  else { main = 'Progress'; sub = streak() ? `${streak()} day streak` : 'Every finished item and review counts'; }
+  const nm = st.cfg && st.cfg.name;
+  document.getElementById('brandname').textContent = nm ? nm + "'s Switch Prep" : 'Switch Prep';
+  document.querySelector('.tabs').hidden = view === 'setup';
+  title.innerHTML = `${esc(main)}<span class="sub">${esc(sub)}</span>`;
+  const nav = view === 'today' || view === 'week';
+  document.getElementById('sync').hidden = view === 'setup' && !st.cfg;
+  document.getElementById('prev').hidden = !nav;
+  document.getElementById('next').hidden = !nav;
+  document.getElementById('gotoday').hidden = !(nav && (view === 'week' ? weekStart(sel) !== weekStart(TODAY) : sel !== TODAY));
+  document.querySelectorAll('.tabs a').forEach(a => a.setAttribute('aria-current', a.dataset.view === view ? 'page' : 'false'));
+}
+function render() {
+  const ae = document.activeElement;
+  if (ae && ae.tagName === 'TEXTAREA' && ae.dataset.note) { pendingRender = true; return; }
+  pendingRender = false;
+  const m = document.getElementById('main');
+  if (view === 'setup') { headerFor(); m.innerHTML = viewSetup(); refreshEstimate(); return; }
+  recompute();
+  headerFor();
+  m.innerHTML = view === 'week' ? viewWeek() : view === 'roadmap' ? viewRoadmap() : view === 'progress' ? viewProgress() : viewToday();
+}
+
+/* ===== Events ===== */
+const main = document.getElementById('main');
+main.addEventListener('click', ev => {
+  const b = ev.target.closest('[data-act]'); if (!b) return;
+  const a = b.dataset.act, id = b.dataset.id;
+  if (a === 'status') setStatus(id, b.dataset.v);
+  else if (a === 'rate') rate(id, b.dataset.r);
+  else if (a === 'undo') undoRate(id);
+  else if (a === 'pull') pullNext();
+  else if (a === 'open') { sel = b.dataset.day; location.hash = 'today'; if (view === 'today') render(); }
+  else if (a === 'copy') {
+    const text = JSON.stringify(st);
+    const done = msg => { const el = document.getElementById('bmsg'); if (el) el.textContent = msg; };
+    try {
+      navigator.clipboard.writeText(text).then(() => done('Copied. Paste it into a note or email to yourself.'), () => { const t = document.getElementById('restore'); t.value = text; t.select(); done('Copy blocked here. The backup is selected in the box below.'); });
+    } catch (e) { const t = document.getElementById('restore'); t.value = text; t.select(); done('The backup is selected in the box below.'); }
+  }
+  else if (a === 'restore') {
+    const raw = document.getElementById('restore').value.trim();
+    let d = null; try { d = JSON.parse(raw); } catch (e) {}
+    if (!d || !d.items) { backupMsg = 'That text is not a valid backup.'; restoreArmed = false; render(); return; }
+    if (!restoreArmed) { restoreArmed = true; const keep = raw; render(); document.getElementById('restore').value = keep; return; }
+    restoreArmed = false; applyImport(d, null);
+  }
+  else if (a === 'cancelrestore') { restoreArmed = false; render(); }
+  else if (a === 'download') downloadFile();
+  else if (a === 'link') chooseFolder();
+  else if (a === 'usepending') { if (pendingDir) useFolder(pendingDir); }
+  else if (a === 'reconnect') reconnect();
+  else if (a === 'unlink') unlink();
+  else if (a === 'acceptimport') { if (pendingImport) applyImport(pendingImport.d, pendingImport.handle); }
+  else if (a === 'cancelimport') keepMine();
+});
+main.addEventListener('toggle', ev => {
+  const d = ev.target; if (!d.dataset || !d.dataset.key) return;
+  if (d.open) { opened.add(d.dataset.key); closed.delete(d.dataset.key); } else { closed.add(d.dataset.key); opened.delete(d.dataset.key); }
+}, true);
+main.addEventListener('change', ev => { if (ev.target.id === 'importfile') importFromInput(ev.target); else if (ev.target.id && ev.target.id.startsWith('cf-')) refreshEstimate(); });
+main.addEventListener('submit', ev => { if (ev.target.id === 'setupform') { ev.preventDefault(); saveSetup(); } });
+let nTimer = null;
+main.addEventListener('input', ev => {
+  const t = ev.target;
+  if (t.id && t.id.startsWith('cf-') && t.type === 'date') refreshEstimate(); if (!t.dataset || !t.dataset.note) return;
+  const v = t.value.trim();
+  const e = ensure(t.dataset.note);
+  if (v) e.note = t.value; else delete e.note;
+  clearTimeout(nTimer); nTimer = setTimeout(persist, 700);
+});
+main.addEventListener('focusout', ev => {
+  if (ev.target.dataset && ev.target.dataset.note) { clearTimeout(nTimer); persist(); setTimeout(() => { if (pendingRender) render(); }, 0); }
+});
+document.getElementById('prev').onclick = () => { sel = addDays(sel, view === 'week' ? -7 : -1); render(); };
+document.getElementById('next').onclick = () => { sel = addDays(sel, view === 'week' ? 7 : 1); render(); };
+document.getElementById('gotoday').onclick = () => { sel = TODAY; try { sessionStorage.removeItem(SEL_KEY); } catch (e) {} render(); };
+const VIEWS = ['today', 'week', 'roadmap', 'progress', 'setup'];
+function route() { const h = location.hash.replace('#', ''); view = !st.cfg ? 'setup' : VIEWS.includes(h) ? h : 'today'; render(); window.scrollTo(0, 0); }
+window.addEventListener('hashchange', route);
+setInterval(() => { if (st.cfg && todayStr() !== TODAY) { const wasToday = sel === TODAY; recompute(); if (wasToday) sel = TODAY; render(); } }, 60000);
+
+loadLocal();
+TODAY = todayStr(); sel = savedSel() || TODAY;   // lesson se wapas aaye toh wahi din (config load ke BAAD — START yahin set hota hai)
+route();
+setSync();
+restoreLinked();
+</script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+/* Planner Learn page — dsa-visual styles.css ke upar thode extra */
+.lr-main { max-width: 960px; margin: 0 auto; }
+.top .lr-links { margin-left: auto; display: flex; gap: 6px; flex-wrap: wrap; }
+.top .lr-links .btn { text-decoration: none; }
+.lr-meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 4px; }
+.lr-meta .badge { text-transform: none; }
+.lr-links-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
+.mynote { border-left: 4px solid var(--accent); }
+.mynote pre { white-space: pre-wrap; font-family: inherit; margin: 6px 0 0; background: none; padding: 0; border: 0; }
+.mynote .muted { margin: 6px 0 0; }
+.lr-index h2 { margin-top: 22px; }
+.lr-index ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+.lr-index li a { text-decoration: none; }
+.lr-index li .muted { font-size: 12px; }
+.lr-done { color: var(--ok, #2b7a3e); font-weight: 600; }
+.lr-foot { margin-top: 12px; }
+/* Day page */
+.day-list { margin: 6px 0 0; padding-left: 22px; }
+.day-list li { margin: 3px 0; }
+.day-nav { position: sticky; top: 52px; z-index: 5; background: var(--bg); padding: 6px 0; }
+.day-item { margin: 22px 0 10px; }
+.day-item > summary { cursor: pointer; list-style: none; border-bottom: 2px solid var(--accent); padding-bottom: 4px; margin-bottom: 10px; }
+.day-item > summary::-webkit-details-marker { display: none; }
+.day-item > summary h2 { display: inline; font-size: 21px; }
+.day-item > summary h2 .badge { font-size: 12px; vertical-align: middle; margin-left: 6px; }
+.day-item > summary::before { content: '▾ '; color: var(--accent); }
+.day-item:not([open]) > summary::before { content: '▸ '; }
+.rev-item { border-bottom: 1px dashed var(--border); padding: 6px 0 10px; }
+.rev-note { white-space: pre-wrap; font-family: inherit; margin: 4px 0 0; }
+.rev-typing { margin-top: 8px; }
+.rev-typing > summary { cursor: pointer; font-size: 14px; font-weight: 600; }
